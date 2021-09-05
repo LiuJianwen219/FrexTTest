@@ -23,8 +23,8 @@
         <div class="col-sm-2 col-md-2 col-lg-2">
           <ul class="nav nav-pill nav-stacked">
             <li><a href="/testList">题目列表1</a></li>
-            <li><a href="/submission/{{ request.session.user_name }}/">个人提交</a></li>
-            <li><a href="/passRec/{{ request.session.user_name }}/">个人通过</a></li>
+            <li><a href="/submission/{{ request.session.u_uid }}/">个人提交</a></li>
+            <li><a href="/passRec/{{ request.session.u_uid }}/">个人通过</a></li>
             {% if request.session.role == "admin" %}
               <li><a href="/submissionAll">全站提交记录</a></li>
               <li><a href="/passRecAll">全站通过情况</a></li>

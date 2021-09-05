@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'captcha',
     'Login',
     'Home',
+    'Suggestion',
 ]
 
 MIDDLEWARE = [

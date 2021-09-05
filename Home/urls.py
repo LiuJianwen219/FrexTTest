@@ -7,9 +7,9 @@ urlpatterns = [
     path("", views.test_introduce),
 
     path('testList/', views.test_list),
-    url(r'testPage/(?P<fid>([0-9a-zA-Z_-]+))/$', views.test_page),
+    url(r'testPage/(?P<t_uid>([0-9a-zA-Z_-]+))/$', views.test_page),
 
-    path('upCode/', views.upCode),
+    path('upCode/', views.submit_code),
     path('startCompile/', views.startCompile),
     path('showLast/', views.show_last),
     # path('detectCompile/', views.detectCompile),
@@ -22,15 +22,15 @@ urlpatterns = [
     path('addTest/', views.add_test),
     path('addTestFile/', views.add_test_file),
 
-    path('submissionAll/', views.submissionAll),
-    url(r'submission/(?P<user_name>(.+))/$', views.submission),
-    url(r'seeCode/(?P<upId>([0-9]+))/$', views.seeCode),
-    url(r'seeInfo/(?P<upId>([0-9]+))/$', views.seeInfo),
+    path('submissionAll/', views.submission_all),
+    url(r'submission/(?P<u_uid>(.+))/$', views.get_submission),
+    url(r'seeCode/(?P<upId>(.+))/$', views.see_code),
+    url(r'seeInfo/(?P<upId>(.+))/$', views.see_info),
 
-    path('passRecAll/', views.passRecAll),
-    url(r'passRec/(?P<user_name>(.+))/$', views.passRec),
-    url(r'seeCodePass/(?P<passId>([0-9]+))/$', views.seeCodePass),
-    url(r'seeInfoPass/(?P<passId>([0-9]+))/$', views.seeInfoPass),
+    path('passRecAll/', views.pass_record_all),
+    url(r'passRec/(?P<u_uid>(.+))/$', views.pass_record),
+    url(r'seeCodePass/(?P<passId>([0-9]+))/$', views.see_code_valid),
+    url(r'seeInfoPass/(?P<passId>([0-9]+))/$', views.see_info_valid),
 
     url(r'download/$', views.download),
 

@@ -1,7 +1,8 @@
 import os, json, time
 import subprocess, uuid
 from threading import Timer
-
+# import struct
+# import numpy as np
 from django.core.files import File
 from django.db.models import Sum, Count, Max
 from django.http import HttpResponse, JsonResponse, FileResponse
@@ -40,6 +41,28 @@ def handle_uploaded_file(p, f):
             destination.write(chunk)
 
 
+# def read_file():  # 函数功能为：将一个文件夹下所有二进制文件以每四个字节方式读取，将读取出的数据转换为浮点类型的数据并以txt格式保存到新的地址去
+#     path = './二进制文件所在文件夹名称'  # 文件夹地址
+#     new_path = './要存放生成txt文件的文件夹名称/'  # 新的存放生成文件的文件夹地址
+#     b_list = ['此处填写二进制文件名称（也可以参考2020.11.10所写博客，利用后缀名找到path文件夹下所有二进制文件）']
+#
+#     for b_file in b_list:
+#         f = open(path + '/' + b_file, 'rb')  # 对b_list列表的文件以二进制方式读取
+#         b_file_ext = os.path.splitext(b_file)  # 分离二进制文件前后缀，b_front为前缀名，b_ext为后缀名
+#         b_front, b_ext = b_file_ext
+#         m = []  # 空列表用于存放二进制数据转换为的浮点数
+#         while True:  # 每四个字节进行读取以及格式转换
+#             a = f.read(4)
+#             if a == b'':  # 为空结束循环
+#                 break
+#             a_float = struct.unpack("f", a)[0]  # 此处存在存储的大小端问题   将二进制数据转换为浮点数
+#             m.append(a_float)
+#         m_array = np.array(m)  # 将m列表转换为array数组
+#         if not os.path.exists(new_path):  # 判断工作目录有无new_path文件夹，若无则创建
+#             os.mkdir(new_path)
+#         np.savetxt(new_path + b_front + '.txt', m_array)  # 对文件进行重命名并保存到新的文件夹
+#         f.close()
+
 def building(request):
     return render(request, "building.html")
 
@@ -67,22 +90,22 @@ def test_list(request):
     return render(request, "TestHome/testList.html", content)
 
 
-def test_page(request, uid):
-    testItem = TestList.objects.get(id=uid)
+def test_page(request, t_uid):
+    test = TestList.objects.get(uid=t_uid)
 
-    file = open(testFilesPath + str(uid) + "/" +
-                testItem.topModule + ".md", 'r', encoding='utf-8')
-    testFile = file.read()
-    file.close()
+    # file = open(testFilesPath + str(t_uid) + "/" +
+    #             test.topic + ".md", 'r', encoding="utf-8")
+    # testFile = file.read()
+    # file.close()
 
     content = {
-        "testFile": testFile,
-        "type": testItem.type,
-        "title": testItem.title,
-        "author": testItem.author,
-        "company": testItem.company,
-        "fid": uid,
-        "grade": testItem.grade,
+        "testFile": test.content,
+        "type": test.type,
+        "title": test.title,
+        "author": test.author,
+        "company": test.company,
+        "fid": test.uid,
+        "grade": test.grade,
     }
 
     return render(request, "TestHome/testPage.html", content)
@@ -142,7 +165,7 @@ def add_test(request):
                         handle_uploaded_file(os.path.join(testFilesPath, str(test.uid), test.topic+".md"),
                                              request.FILES['file'])
                         test.file_path = os.path.join(testFilesPath, str(test.uid))
-                        with open(os.path.join(testFilesPath, str(test.uid), test.topic+".md"), "r") as f:
+                        with open(os.path.join(testFilesPath, str(test.uid), test.topic+".md"), "r", encoding='utf-8') as f:
                             test.content = f.read()
                         test.save()
                         message = '提交成功！'
@@ -194,63 +217,40 @@ def submit_code(request):
         code = request.POST.get("testUserCode", None)
 
         test = TestList.objects.get(uid=t_uid)
-        user = User.objects.get(name=request.session["user_name"])
+        user = User.objects.get(uid=request.session["u_uid"])
 
-
-
-        info = "创建提交记录"
-        # count = SubmitList.objects.filter(test=test, user=user).count()
-        state = "ERROR"  # 用于网页通信
-        testState = "文件上传失败"  # 用于记录提交情况
-        grade = 0.00  # 本次提交的成绩
-        # curtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
-        row = SubmitList()
+        row = SubmitList(test=test, user=user)
         row.save()
 
-        userDir = os.path.join(userFilesPath, "user", request.session["user_name"],
+        userDir = os.path.join(userFilesPath, "user", str(user.uid),
                                "testing", str(t_uid), str(row.uid))
         if not os.path.exists(userDir):  # 如果用户首次提交这个题目的代码，那么创建目录
             os.makedirs(userDir)
-
-        f = open(userDir + "/" + "default_" + str(count) + ".v", 'w', encoding='utf-8')
-        f = open(os.path.join(userDir, test.topic+".v"), 'w', encoding='utf-8')
-        f.write(upCode)  # 保存用户代码
+        f = open(os.path.join(userDir, test.topic+".v"), 'wt')
+        f.write(code)  # 保存用户代码
         f.close()
 
-        # 用于拷贝其他测试文件到当前次测试
-        testFilePath = testFilesPath + fid + "/testFile/*"
-        result, output = subprocess.getstatusoutput("cp -r " + testFilePath + " " + userDir)
-        if result == 0:
-            testState = "文件上传成功"
-            state = "OK"
-
-        currentPath = os.getcwd()
-        os.chdir(userDir)  # 保存记录，但是由于路径问题，需要临时变换一下工作目录
-        row = upList(test=test, grade=grade, state=testState,
-                     user=user, upCode=upCode, info=info, count=count,
-                     file_name="default_" + str(count) + ".v")
-        os.chdir(currentPath)
+        row.state = "提交"
+        row.code = code
+        row.status = "代码提交成功"
+        row.message = "Success: code submit complete.\n"
         row.save()
 
         test.upNum += 1  # 题目提交数目 +1
         test.save()
 
-        request.session['fid'] = fid
-        request.session['count'] = count
-        request.session['gradeAll'] = test.grade
-        request.session['upTime'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        request.session['t_uid'] = t_uid
+        request.session['s_uid'] = row.uid
+        request.session['upTime'] = row.submit_time
 
-        logger.warning(request.session['user_name'] + " " + request.session['upTime'] + " file save over")
-
+        state = "OK"
         data = {
             "state": state,
-            "upTime": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-            "testState": testState,
-            "recvCode": upCode,
-            "info": info,
+            "upTime": row.submit_time,
+            "testState": row.status,
+            "recvCode": code,
+            "info": row.message,
         }
-
         return HttpResponse(json.dumps(data), content_type='application/json')
 
     data = {"state": "ERROR", "testState": "未知错误，请联系管理员", "info": "非法请求"}
@@ -596,240 +596,6 @@ def detectJudge():
 
     Timer(10, detectJudge).start()
 
-# def detectCompile(request):
-#     if request.method == "POST":
-#         time = str(request.POST.get("time", -1))
-#         fid = request.session["fid"]
-#         count = request.session["count"]
-#         user = User2.objects.get(name=request.session["user_name"])
-#         test = testList.objects.get(id=fid)
-#         row = upList.objects.get(test=test, user=user, count=request.session["count"])
-#
-#         print("compile " + str(time))
-#
-#         threadID = str(request.POST.get("threadID", None))
-#         global threadList
-#         if threadID == None or threadList[threadID] == None:
-#             row.state = "编译失败"
-#             row.info = "编译线程丢失"
-#             row.save()
-#             data = {"state": "ERROR", "info": "编译失败"}
-#             return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#         if threadList[threadID].get_result() is None:
-#             if int(time) < Compile_MAX_Time:
-#                 data = {"state": "OK", "compileState": "compiling...",
-#                         "info": "编译进行中", "threadID": threadID,
-#                         "time": time}
-#                 return HttpResponse(json.dumps(data), content_type='application/json')
-#             else:
-#                 row.state = "编译时长超过"
-#                 row.info = "编译超时"
-#                 row.save()
-#                 data = {"state": "ERROR", "compileState": "OVER", "testState": "编译超时", "info": "编译超时..."}
-#                 return HttpResponse(json.dumps(data), content_type='application/json')
-#         else:
-#             # result = {'state': "OK", 'bitFilePath': "/tmp/bit/", 'bitFileName': "default_10.bit", 'info': "编译成功"}
-#             print("编译完成")
-#             result = threadList[threadID].get_result()
-#             del threadList[threadID]
-#
-#             if result['state'] == 'OK':
-#                 info = "编译完成"
-#                 testState = "编译成功，准备测试"
-#                 state = "OK"
-#
-#                 userDir = userFilesPath + request.session["user_name"] + "/" + fid + "/" + str(count)
-#                 logger.warning(os.getcwd())
-#                 res, output = subprocess.getstatusoutput(
-#                     "cp " + os.path.join(result['bitFilePath'] + "/" + result['bitFileName']) + " " + userDir)
-#
-#                 row.comTime = int(time)
-#
-#                 if res == 0:
-#                     row.state = testState
-#                     row.info = info
-#                     row.save()
-#                     data = {
-#                         "state": state,
-#                         "testState": testState,
-#                         "bitFileName": result['bitFileName'],
-#                         "bitFilePath": userDir,
-#                         'info': info,
-#                         "compileState": "OVER",
-#                     }
-#                     return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#                 row.state = "编译完成，数据拷贝出错"
-#                 row.info = "bit文件数据拷贝出错"
-#                 row.save()
-#
-#                 data = {"state": "ERROR", "compileState": "OVER", "testState": "数据拷贝出错", "info": "但是编译完成了"}
-#                 return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#             row.state = result['compileInfo']
-#             row.info = "编译失败"
-#             row.save()
-#
-#             data = {"state": "ERROR", "compileState": "OVER", "testState": result['compileInfo'], "info": "编译失败"}
-#             return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#     data = {"state": "ERROR", "testState": "非POST请求", "info": "编译失败"}
-#     return HttpResponse(json.dumps(data), content_type='application/json')
-
-
-# def startJudge(request):
-#     if request.method == "POST":
-#         bitFileName = request.POST.get("bitFileName", None)
-#         bitFilePath = request.POST.get("bitFilePath", None)
-#         fid = request.session["fid"]
-#
-#         content = {
-#             'userName': request.session["user_name"],
-#             'fid': request.session["fid"],
-#             'count': request.session["count"],
-#             'bitFileName': bitFileName
-#         }
-#
-#         global threadID
-#         global threadList
-#         threadList[str(threadID)] = TestThread(exection, content)
-#         currentThreadID = threadID
-#         threadID += 1
-#         threadList[str(currentThreadID)].start()
-#         logger.warning("开始评测")
-#
-#         # result, cycle, testResult = 0, 999, [{'result': "答案正确", 'info': "测试 1"},
-#         #                                     {'result': "答案正确", 'info': "测试 2"},
-#         #                                     {'result': "答案正确", 'info': "测试 3"}]
-#
-#         data = {"state": "OK", "threadID": currentThreadID,
-#                 "testingState": "testing...", "info": "开始评测"}
-#         return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#     data = {"state": "ERROR", "testState": "非POST请求", "info": "启动评测失败"}
-#     return HttpResponse(json.dumps(data), content_type='application/json')
-
-
-# def detectJudge(request):
-#     if request.method == "POST":
-#         fid = request.session["fid"]
-#         user = User2.objects.get(name=request.session["user_name"])
-#         test = testList.objects.get(id=fid)
-#         row = upList.objects.get(test=test, user=user, count=request.session["count"])
-#         time = str(request.POST.get("time", -1))
-#
-#         print("judge " + str(time))
-#
-#         threadID = str(request.POST.get("threadID", None))
-#         global threadList
-#         if threadID == None or threadList[threadID] == None:
-#             row.state = "测试失败"
-#             row.info = "测试线程丢失"
-#             row.save()
-#             data = {"state": "ERROR", "info": "测试失败"}
-#             return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#         if threadList[threadID].get_result() is None:
-#             if int(time) < Test_MAX_Time:
-#                 data = {"state": "OK", "testingState": "testing...",
-#                         "info": "测试进行中", "threadID": threadID,
-#                         "time": time}
-#                 return HttpResponse(json.dumps(data), content_type='application/json')
-#             else:
-#                 row.state = "测试超时"
-#                 row.info = "测试超时"
-#                 row.save()
-#                 data = {
-#                     "info": "测试超时",
-#                     "testState": "测试超时",
-#                     "testingState": "OVER",
-#                 }
-#                 return HttpResponse(json.dumps(data), content_type='application/json')
-#         else:
-#             result, cycle, testResult = threadList[threadID].get_result()
-#
-#             row.exeTime = int(time)
-#
-#             if result == 0:
-#                 state = "OK"
-#                 info = testResult
-#                 testState = "测试流程执行完成"
-#                 cnt = 0
-#                 for res in testResult:
-#                     if res['result'] == "答案正确":
-#                         cnt = cnt + 1
-#                 grade = round(cnt / len(testResult) * test.grade, 2)
-#                 judge = "尝试"
-#                 if cnt == len(testResult):
-#                     judge = "通过"
-#             else:
-#                 state = "ERROR"
-#                 info = "未知错误"
-#                 testState = "测试流程失败（测试超时，请检查代码）"
-#                 grade = 0.00
-#                 judge = "尝试"
-#
-#             row.state = testState
-#             row.info = info
-#             row.grade = grade
-#             row.judge = judge
-#             row.cycle = cycle
-#             row.save()
-#
-#             if judge == "通过":
-#                 test.passNum += 1  # 测试通过数目 +1
-#                 test.save()
-#                 # 修改，通过条件下用时最少的代码
-#                 passRecords = passList.objects.filter(test=test, user=user)
-#                 if len(passRecords) == 0:
-#                     passRecord = passList()
-#                     passRecord.user = user
-#                     passRecord.test = test
-#                     passRecord.grade = grade
-#                     # passRecord.passTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-#                     passRecord.leastCycle = cycle
-#                     passRecord.passCode = row.upCode
-#                     passRecord.info = row.info
-#                     passRecord.save()
-#                 elif cycle < passRecords[0].leastCycle:
-#                     # passRecords[0].passTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-#                     passRecords[0].leastCycle = cycle
-#                     passRecords[0].passCode = row.upCode
-#                     passRecords[0].info = row.info
-#                     passRecords[0].save()
-#
-#             if grade > 0.0:
-#                 # 修改有得分的提交里，最高得分的情况
-#                 gradeRecords = gradeList.objects.filter(test=test, user=user)
-#                 if len(gradeRecords) == 0:
-#                     gradeMax = gradeList()
-#                     gradeMax.user = user
-#                     gradeMax.test = test
-#                     gradeMax.maxGrade = grade
-#                     gradeMax.passCode = row.upCode
-#                     gradeMax.info = row.info
-#                     gradeMax.save()
-#                 elif grade > gradeRecords[0].maxGrade:
-#                     gradeRecords[0].maxGrade = grade
-#                     gradeRecords[0].passCode = row.upCode
-#                     gradeRecords[0].info = row.info
-#                     gradeRecords[0].save()
-#
-#             logger.warning("评测结束！")
-#
-#             data = {
-#                 "state": state,
-#                 "testState": testState,
-#                 "testResult": testResult,
-#                 "grade": grade,
-#                 "testingState": "OVER",
-#             }
-#             return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#     data = {"state": "ERROR", "testState": "未知错误", "info": "非POST请求"}
-#     return HttpResponse(json.dumps(data), content_type='application/json')
-
 
 def download(request):
     userName = request.GET.get('userName')
@@ -843,101 +609,103 @@ def download(request):
     response = HttpResponse(file)
     response['Content-Type'] = 'application/octet-stream'  # 设置头信息，告诉浏览器这是个文件
     response['Content-Disposition'] = 'attachment;filename="{0}.bit"'.format(deviceId)
+    # response["Content-Disposition"] = "attachment; filename*=UTF-8''{}".format(escape_uri_path(filename)) # 中文文件名
     return response
 
 
-def submission(request, user_name):
+# check u_uid
+def get_submission(request, u_uid):
     submissionList = []
-    if user_name:
-        allSubmissionList = upList.objects.filter(
-            user=User2.objects.get(name=user_name)).order_by('-upTime')[:20]
+    if u_uid:
+        allSubmissionList = SubmitList.objects.filter(
+            user=User.objects.get(uid=u_uid)).order_by('-submit_time')[:20]
         for p in allSubmissionList:
-            submissionList.append({"user": user_name, "title": p.test.title,
-                                   "upTime": p.upTime, "judge": p.judge,
-                                   "state": p.state, "grade": p.grade,
-                                   "cycle": p.cycle, "upId": p.id})
+            submissionList.append({"user": p.user.name, "title": p.test.title,
+                                   "upTime": p.submit_time, "judge": p.state,
+                                   "state": p.status, "grade": p.score,
+                                   "cycle": p.cycle, "upId": p.uid})
 
     content = {
         'submissionList': submissionList,
         'type': "SINGLE"
     }
-    return render(request, "Test/submission.html", content)
+    return render(request, "TestHome/submission.html", content)
 
 
-def submissionAll(request):
+def submission_all(request):
     submissionList = []
-    allSubmissionList = upList.objects.all().order_by('-upTime')[:50]
+    allSubmissionList = SubmitList.objects.all().order_by('-submit_time')[:50]
     for p in allSubmissionList:
         submissionList.append({"user": p.user.name, "title": p.test.title,
-                               "upTime": p.upTime, "judge": p.judge,
-                               "state": p.state, "grade": p.grade,
-                               "cycle": p.cycle, "upId": p.id})
+                               "upTime": p.submit_time, "judge": p.state,
+                               "state": p.status, "grade": p.score,
+                               "cycle": p.cycle, "upId": p.uid})
 
     content = {
         'submissionList': submissionList,
         'type': "ALL"
     }
-    return render(request, "Test/submission.html", content)
+    return render(request, "TestHome/submission.html", content)
 
 
-def seeCode(request, upId):
-    code = upList.objects.get(id=upId).upCode
+def see_code(request, upId):
+    code = SubmitList.objects.get(uid=upId).code
     return HttpResponse(code, content_type="text/plain; charset=utf-8")
 
 
-def seeInfo(request, upId):
-    info = upList.objects.get(id=upId).info
+def see_info(request, upId):
+    info = SubmitList.objects.get(uid=upId).message
     return HttpResponse(info, content_type="text/plain; charset=utf-8")
 
 
-def passRec(request, user_name):
+def pass_record(request, u_uid):
     passRecList = []
-    if user_name:
-        allPassList = passList.objects.filter(
-            user=User2.objects.get(name=user_name)).order_by("test")
+    if u_uid:
+        allPassList = ValidSubmitList.objects.filter(
+            user=User.objects.get(uid=u_uid)).order_by("test")
         for p in allPassList:
             passRecList.append({"user": p.user.name, "title": p.test.title,
-                                "passTime": p.passTime, "cycle": p.leastCycle,
-                                "passId": p.id, "grade": p.grade})
+                                "passTime": p.submit.submit_time, "cycle": p.submit.cycle,
+                                "passId": p.uid, "grade": p.submit.score})
 
     content = {
         'passList': passRecList,
         'type': "SINGLE"
     }
-    return render(request, "Test/passRecord.html", content)
+    return render(request, "TestHome/passRecord.html", content)
 
 
-def passRecAll(request):
+def pass_record_all(request):
     passRecList = []
-    allPassList = passList.objects.all().order_by("test")
+    allPassList = ValidSubmitList.objects.all().order_by("test")
     for p in allPassList:
         passRecList.append({"user": p.user.name, "title": p.test.title,
-                            "passTime": p.passTime, "cycle": p.leastCycle,
-                            "passId": p.id, "grade": p.grade})
+                            "passTime": p.submit.submit_time, "cycle": p.submit.cycle,
+                            "passId": p.uid, "grade": p.submit.score})
 
     content = {
         'passList': passRecList,
         'type': "ALL"
     }
-    return render(request, "Test/passRecord.html", content)
+    return render(request, "TestHome/passRecord.html", content)
 
 
-def seeCodePass(request, passId):
-    code = passList.objects.get(id=passId).passCode
+def see_code_valid(request, passId):
+    code = ValidSubmitList.objects.get(uid=passId).submit.code
     return HttpResponse(code, content_type="text/plain; charset=utf-8")
 
 
-def seeInfoPass(request, passId):
-    info = passList.objects.get(id=passId).info
+def see_info_valid(request, passId):
+    info = ValidSubmitList.objects.get(uid=passId).submit.message
     return HttpResponse(info, content_type="text/plain; charset=utf-8")
 
 
 def ranking(request):
-    gradeLists = gradeList.objects.all().values('user__name'). \
-        annotate(Sum("maxGrade"), Count("user__name"), Max("upTime")).order_by("user__name")
-    passLists = passList.objects.all().values('user__name'). \
-        annotate(Sum("grade"), Count("user__name"), Max("passTime")).order_by("user__name")
-    persons = User2.objects.all().values("name").order_by("name")
+    gradeLists = BestSubmitList.objects.all().values('user__name'). \
+        annotate(Sum("submit__score"), Count("user__name"), Max("submit__submit_time")).order_by("user__name")
+    passLists = ValidSubmitList.objects.all().values('user__name'). \
+        annotate(Sum("submit__score"), Count("user__name"), Max("submit__submit_time")).order_by("user__name")
+    persons = User.objects.all().values("name").order_by("name")
 
     print(gradeLists)
     print(passLists)
@@ -952,11 +720,11 @@ def ranking(request):
                 p < len(passLists) and r["name"] == passLists[p]["user__name"]:
             rankings.append({"user": r["name"],
                              "passN": passLists[p]["user__name__count"],
-                             "passG": passLists[p]["grade__sum"],
-                             "passT": passLists[p]["passTime__max"],
+                             "passG": passLists[p]["submit__score__sum"],
+                             "passT": passLists[p]["submit__submit_time__max"],
                              "allN": gradeLists[g]["user__name__count"],
-                             "allG": gradeLists[g]["maxGrade__sum"],
-                             "allT": gradeLists[g]["upTime__max"]})
+                             "allG": gradeLists[g]["submit__score__sum"],
+                             "allT": gradeLists[g]["submit__submit_time__max"]})
             p += 1
             g += 1
         elif g < len(gradeLists) and r["name"] == gradeLists[g]["user__name"]:
@@ -965,14 +733,14 @@ def ranking(request):
                              "passG": 0.00,
                              "passT": "~~",
                              "allN": gradeLists[g]["user__name__count"],
-                             "allG": gradeLists[g]["maxGrade__sum"],
-                             "allT": gradeLists[g]["upTime__max"]})
+                             "allG": gradeLists[g]["submit__score__sum"],
+                             "allT": gradeLists[g]["submit__submit_time__max"]})
             g += 1
         elif p < len(passLists) and r["name"] == passLists[p]["user__name"]:
             rankings.append({"user": r["name"],
                              "passN": passLists[p]["user__name__count"],
-                             "passG": passLists[p]["grade__sum"],
-                             "passT": passLists[p]["passTime__max"],
+                             "passG": passLists[p]["submit__score__sum"],
+                             "passT": passLists[p]["submit__submit_time__max"],
                              "allN": 0,
                              "allG": 0.00,
                              "allT": "~~"})
@@ -995,7 +763,7 @@ def ranking(request):
         'rankings': rankings,
         'type': "ALL"
     }
-    return render(request, "Test/rankList.html", content)
+    return render(request, "TestHome/rankList.html", content)
 
 
 def guide(request):
@@ -1007,178 +775,4 @@ def guide(request):
         "guideFile": guideFile,
     }
 
-    return render(request, "Test/testGuide.html", content)
-
-#  备份测试运行函数
-# def judgeMent(request):
-#     if request.method == "POST":
-#         bitFileName = request.POST.get("bitFileName", None)
-#         bitFilePath = request.POST.get("bitFilePath", None)
-#         fid = request.session["fid"]
-#
-#         content = {
-#             'userName': request.session["user_name"],
-#             'fid': request.session["fid"],
-#             'count': request.session["count"],
-#             'bitFileName': bitFileName
-#         }
-#
-#         logger.warning("开始评测")
-#         result, cycle, testResult = exection(content)
-#         #result, cycle, testResult = 0, 999, [{'result': "答案正确", 'info': "测试 1"},
-#         #                                     {'result': "答案正确", 'info': "测试 2"},
-#         #                                     {'result': "答案正确", 'info': "测试 3"}]
-#
-#         user = User2.objects.get(name=request.session["user_name"])
-#         test = testList.objects.get(id=fid)
-#
-#         if result == 0:
-#             state = "OK"
-#             info = testResult
-#             testState = "测试流程执行完成"
-#             cnt = 0
-#             for res in testResult:
-#                 if res['result'] == "答案正确":
-#                     cnt = cnt+1
-#             grade = round(cnt/len(testResult)*test.grade, 2)
-#             judge = "尝试"
-#             if cnt == len(testResult):
-#                 judge = "通过"
-#             # cycle = 999
-#         else:
-#             state = "ERROR"
-#             info = "未知错误"
-#             testState = "测试流程失败"
-#             grade = 0.00
-#             judge = "尝试"
-#             # cycle = -1
-#
-#         row = upList.objects.get(test=test, user=user, count=request.session["count"])
-#         row.state = testState
-#         row.info = info
-#         row.grade = grade
-#         row.judge = judge
-#         row.cycle = cycle
-#         row.save()
-#
-#         if judge == "通过":
-#             test.passNum += 1  # 测试通过数目 +1
-#             test.save()
-#             # 修改，通过条件下用时最少的代码
-#             passRecords = passList.objects.filter(test=test, user=user)
-#             if len(passRecords) == 0:
-#                 passRecord = passList()
-#                 passRecord.user = user
-#                 passRecord.test = test
-#                 passRecord.grade = grade
-#                 # passRecord.passTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-#                 passRecord.leastCycle = cycle
-#                 passRecord.passCode = row.upCode
-#                 passRecord.info = row.info
-#                 passRecord.save()
-#             elif cycle < passRecords[0].leastCycle:
-#                 # passRecords[0].passTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-#                 passRecords[0].leastCycle = cycle
-#                 passRecords[0].passCode = row.upCode
-#                 passRecords[0].info = row.info
-#                 passRecords[0].save()
-#
-#         if grade > 0.0:
-#             # 修改有得分的提交里，最高得分的情况
-#             gradeRecords = gradeList.objects.filter(test=test, user=user)
-#             if len(gradeRecords) == 0:
-#                 gradeMax = gradeList()
-#                 gradeMax.user = user
-#                 gradeMax.test = test
-#                 gradeMax.maxGrade = grade
-#                 gradeMax.passCode = row.upCode
-#                 gradeMax.info = row.info
-#                 gradeMax.save()
-#             elif grade > gradeRecords[0].maxGrade:
-#                 gradeRecords[0].maxGrade = grade
-#                 gradeRecords[0].passCode = row.upCode
-#                 gradeRecords[0].info = row.info
-#                 gradeRecords[0].save()
-#
-#
-#         # logger.warning("评测结束 " + str(info))
-#         logger.warning("评测结束！")
-#
-#         data = {
-#             "state": state,
-#             "testState": testState,
-#             "testResult": testResult,
-#             "grade": grade
-#         }
-#         return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#     data = {"state": "ERROR", "testState": "未知错误", "info": "非POST请求"}
-#     return HttpResponse(json.dumps(data), content_type='application/json')
-
-#  编译函数备份
-# def startCompile(request):
-#     if request.method == "POST":
-#         if not os.path.exists(compileZipPath):
-#             os.makedirs(compileZipPath)
-#         if not os.path.exists(compileBitPath):
-#             os.makedirs(compileBitPath)
-#         if not os.path.exists(compileErrPath):
-#             os.makedirs(compileErrPath)
-#
-#         fid = request.session["fid"]
-#         count = request.session["count"]
-#         tempFilePath = compileZipPath + "ljw_test_{0}.zip".format(len(os.listdir(compileZipPath)))
-#
-#         utilities = ZipUtilities()
-#         path = os.path.join(userFilesPath, request.session['user_name'], fid, str(count))
-#         filenames = os.listdir(path)
-#         for filename in filenames:
-#             filepath = os.path.join(path, filename)
-#             utilities.toZip(filepath, filename)
-#         z = utilities.zip_file
-#
-#         z.write(tempFilePath)
-#         with open(tempFilePath, 'wb') as f:
-#             for data in z:
-#                 f.write(data)
-#         print(request.session['user_name'] + " " + request.session['upTime'] + " : zip over")
-#
-#         #result = compileBit(tempFilePath, testList.objects.get(id=fid).topModule)
-#         result = {'state': "OK", 'bitFilePath': "/tmp/bit/", 'bitFileName': "default_10.bit", 'info': "编译成功"}
-#         print(result)
-#         logger.warning("编译信息：")
-#
-#         if result['state'] == 'OK':
-#             info = "编译完成"
-#             testState = "编译成功，正在测试"
-#             state = "OK"
-#
-#             userDir = userFilesPath + request.session["user_name"] + "/" + fid + "/" + str(count)
-#             logger.warning(os.getcwd())
-#             res, output = subprocess.getstatusoutput(
-#                 "cp " + os.path.join(result['bitFilePath'] + "/" + result['bitFileName']) + " " + userDir)
-#
-#             if res == 0:
-#                 user = User2.objects.get(name=request.session["user_name"])
-#                 test = testList.objects.get(id=fid)
-#                 row = upList.objects.get(test=test, user=user, count=request.session["count"])
-#                 row.state = testState
-#                 row.info = info
-#                 row.save()
-#                 data = {
-#                     "state": state,
-#                     "testState": testState,
-#                     "bitFileName": result['bitFileName'],
-#                     "bitFilePath": userDir,
-#                     'info': info
-#                 }
-#                 return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#             data = {"state": "ERROR", "testState": "数据拷贝出错", "info": "编译失败"}
-#             return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#         data = {"state": "ERROR", "testState": result['compileInfo'], "info": "编译失败"}
-#         return HttpResponse(json.dumps(data), content_type='application/json')
-#
-#     data = {"state": "ERROR", "testState": "非POST请求", "info": "编译失败"}
-#     return HttpResponse(json.dumps(data), content_type='application/json')
+    return render(request, "TestHome/testGuide.html", content)

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from Login import forms
 from Login.models import User
 
+
 # Create your views here.
 
 
@@ -26,6 +27,7 @@ def login(request):
                 user.login_count += 1
                 user.save()
                 request.session['is_login'] = True
+                request.session['u_uid'] = str(user.uid)
                 request.session['user_name'] = user.name
                 request.session['role'] = user.role
                 return redirect('/')
@@ -49,7 +51,6 @@ def register(request):
             password1 = register_form.cleaned_data.get('password1')
             password2 = register_form.cleaned_data.get('password2')
             email = register_form.cleaned_data.get('email')
-
 
             if password1 != password2:
                 message = '两次输入的密码不同！'

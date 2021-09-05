@@ -24,7 +24,8 @@ urlpatterns = [
 
     re_path(r'^favicon\.ico$', favicon_view),
     path('login/', include('Login.urls')),
-    # path('suggestion/', include('Suggestion.urls')),
+    path('suggestion/', include('Suggestion.urls')),
     # path('', include('Test.urls')),
+    path('compile/', include('Compile.urls')),
     path('', include('Home.urls')),
 ]
