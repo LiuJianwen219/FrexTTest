@@ -1,0 +1,64 @@
+{% load static %}
+{% block pageStyle %}
+<link href="{% static 'css/topNav.css' %}" rel='stylesheet' type='text/css' />
+{% endblock %}
+
+<nav id="topNav" class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed"
+              data-toggle="collapse" data-target="#bs-example-navbar-collapse-top"
+              aria-expanded="false">
+{#        <span class="sr-only">Toggle navigation</span>#}
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" id="topNavLogo">FrexT</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-top">
+      {% if request.session.is_login == True and request.session.role != "undefined" %}
+        <ul class="nav navbar-nav">
+          <li class="navItem"><a href="/">首页</a></li>
+          {% if request.session.role == "admin" %}
+            <li class="navItem"><a href="/guide">说明</a></li>
+            <li class="navItem"><a href="/resource">资源</a></li>
+            <li class="navItem"><a href="/testList">测试</a></li>
+            <li class="navItem"><a href="/suggestion">意见</a></li>
+            <li class="navItem"><a href="/addTest">添加测试</a></li>
+          {% else %}
+            <li class="navItem"><a href="/guide">说明</a></li>
+            <li class="navItem"><a href="/resource">资源</a></li>
+            <li class="navItem"><a href="/testList">测试</a></li>
+            <li class="navItem"><a href="/suggestion">意见</a></li>
+          {% endif %}
+          <li class="dropdown navItem">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              其他 <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/submissionAll">全站提交记录</a></li>
+              <li><a href="/passRecAll">全站通过情况</a></li>
+              <li><a href="/ranking">全站排名</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="/enterExotic">进入实验平台</a></li>
+            </ul>
+          </li>
+        </ul>
+      {% endif %}
+      <ul class="nav navbar-nav navbar-right">
+        {% if request.session.is_login != True %}
+          <li class="navItem"><a href="/login">登录</a></li>
+          <li class="navItem"><a href="/login/register">注册</a></li>
+        {% else %}
+          <li class="navItem"><a href="/login/logout">登出</a></li>
+        {% endif %}
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}{% load static %}
+{% block pageStyle %}
+{#  <meta name="viewport" content="width=device-width, initial-scale=1">#}
+{#  <link href="{% static "css/github-markdown.css" %}" rel="stylesheet" type="text/css">#}
+{#  <link href="{% static "css/testHome.css" %}" rel="stylesheet" type="text/css">#}
+{#  <script src="../../../static/js/testHome.js" type="text/javascript"></script>#}
+{% endblock %}
+
+{% block title %}FrexT 通过记录{% endblock %}
+
+{% block content %}
+  <section id="testHome">
+    <div class="container" name="topNav">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+          {% include 'topNav.html' %}
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-2 col-md-2 col-lg-2">
+          <ul class="nav nav-pill nav-stacked">
+            <li><a href="/testList">题目列表1</a></li>
+            <li><a href="/submission/{{ request.session.user_name }}/">个人提交</a></li>
+            <li><a href="/passRec/{{ request.session.user_name }}/">个人通过</a></li>
+            {% if request.session.role == "admin" %}
+              <li><a href="/submissionAll">全站提交记录</a></li>
+              <li><a href="/passRecAll">全站通过情况</a></li>
+              <li><a href="/ranking">全站排名</a></li>
+            {% endif %}
+          </ul>
+        </div>
+        <div class="col-sm-10 col-md-10 col-lg-10">
+          {% if type == "ALL" %}
+            <h2>FrexT测试系统：全部通过最佳记录</h2>
+          {% else %}
+            <h2>FrexT测试系统：个人通过最佳记录</h2>
+          {% endif %}
+          <h3>公告：本系统处于测试阶段，如有问题欢迎咨询</h3>
+          <h4>钉钉：刘剑文</h4>
+          <h4>邮箱：jianwen_liu219@163.com</h4>
+
+          <table class="table">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">时间</th>
+                <th scope="col">用户</th>
+                <th scope="col">标题</th>
+                <th scope="col">分数</th>
+                <th scope="col">时长</th>
+                <th scope="col">代码</th>
+                <th scope="col">测试情况</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for T in passList %}
+                <tr class="testDatas">
+{#                  <th scope="row">{{ forloop.counter }}</th>#}
+                  <td>{{ T.passTime }}</td>
+                  <td>{{ T.user }}</td>
+                  <td>{{ T.title }}</td>
+                  <td>{{ T.grade }}</td>
+                  <td>{{ T.cycle }}</td>
+                  {% if request.session.role == "admin" %}
+                    <td><a href="/seeCodePass/{{ T.passId }}/">查看代码</a></td>
+                    <td><a href="/seeInfoPass/{{ T.passId }}/">查看测试</a></td>
+                  {% else %}
+                    {% if type == "ALL" %}
+                      <td>查看代码</td>
+                      <td>查看测试</td>
+                    {% else %}
+                      <td><a href="/seeCodePass/{{ T.passId }}/">查看代码</a></td>
+                      <td><a href="/seeInfoPass/{{ T.passId }}/">查看测试</a></td>
+                    {% endif %}
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <script>
+    var testDatas = document.getElementsByClassName("testDatas");
+    for(let i = 0; i<testDatas.length; i++){
+        if(testDatas[i].children[3].innerHTML === "1"){
+            testDatas[i].children[3].innerHTML = "组合电路";
+        } else if(testDatas[i].children[3].innerHTML === "2"){
+            testDatas[i].children[3].innerHTML = "时序电路";
+        } else if(testDatas[i].children[3].innerHTML === "3"){
+            testDatas[i].children[3].innerHTML = "系统综合";
+        }
+    }
+  </script>
+{% endblock %}

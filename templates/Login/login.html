@@ -1,0 +1,75 @@
+{% extends 'base.html' %} {% load static %}
+{% block pageStyle %}
+{#<link href="{% static 'css/login.css' %}" rel='stylesheet' type='text/css' />#}
+{% endblock %}
+
+{% block title %}FrexT 登录界面{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row" name="topNav">
+    <div class="col-sm-12 col-md-12 col-lg-12">
+      {% include 'topNav.html' with role=request.session.role %}
+    </div>
+  </div>
+  <div class="row" name="loginForm">
+    <div class="col-sm-3 col-md-3 col-lg-3"></div>
+    <div class="col-sm-6 col-md-6 col-lg-6">
+      <form class="form-login" action="/login/" method="post">
+        {% if login_form.captcha.errors %}
+            <div class="alert alert-warning">{{ login_form.captcha.errors }}</div>
+        {% elif message %}
+            <div class="alert alert-warning">{{ message }}</div>
+        {% endif %}
+
+        {% csrf_token %}
+        <h1 class="text-center">欢迎登录</h1>
+
+        <div class="form-group">
+          <h3>{{ login_form.username.label_tag }}</h3>
+          {{ login_form.username}}
+        </div>
+        <div class="form-group">
+          <h3>{{ login_form.password.label_tag }}</h3>
+          {{ login_form.password }}
+        </div>
+        <div class="form-group">
+          <h4>{{ login_form.captcha.label_tag }}</h4>
+          {{ login_form.captcha }}
+        </div>
+
+        <div class="row">
+          <div class="text-center" style="height: 40px; font-size: large">
+            <a href="/login/register/" class="text-success text-center" style="font-size: large">
+              <ins>新用户注册</ins></a>
+            <a href="/login/findPasswd/" class="text-success text-center" style="font-size: large">
+              <ins>找回密码</ins></a>
+          </div>
+        </div>
+
+        <div class="row">
+          <button type="submit" class="btn btn-primary center-block" style="font-size: large">登录</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-3 col-md-3 col-lg-3"></div>
+  </div>
+</div> <!-- /container -->
+<script>
+     //点击刷新验证码
+    $(function () {
+        $('.captcha').css({
+            'cursor': 'pointer'
+        });
+        // ajax刷新
+        $('.captcha').click(function () {
+            console.log('click');
+            $.get("{% url 'captcha-refresh' %}",
+                function (result) {
+                    $('.captcha').attr('src', result['image_url']);
+                    $('#id_captcha_0').val(result['key'])
+                });
+        });
+    })
+</script>
+{% endblock %}

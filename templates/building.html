@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% load static %}
+{% block pageStyle %}
+{% endblock %}
+
+{% block title %}FrexT 在建{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        {% include 'topNav.html' with role=request.session.role %}
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="col-sm-3 col-md-3 col-lg-3"></div>
+        <div class="col-sm-9 col-md-9 col-lg-9"><h3>页面在建......</h3></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

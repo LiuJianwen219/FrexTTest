@@ -1,0 +1,64 @@
+{% extends 'base.html' %} {% load static %}
+{% block pageStyle %}
+{% endblock %}
+
+{% block title %}FrexT 首页{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row topNav">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        {% include 'topNav.html' with role=request.session.role %}
+      </div>
+    </div>
+    <div class="jumbotron" style="background-color: white">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-10 col-sd-push-1
+                      col-md-10 col-md-push-1
+                      col-lg-10 col-ld-push-1">
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <h1>远程FPGA测试平台</h1>
+                <h2>远程FPGA测试平台，计算机硬件设计能力评测：</h2>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-11 col-sd-push-1
+                          col-md-11 col-md-push-1
+                          col-lg-11 col-ld-push-1">
+                <h3>A级：偏难级</h3>
+                <h3>B级：一般级</h3>
+                <h3>C级：基础级</h3>
+              </div>
+            </div>
+            {% if request.session.is_login == True and request.session.role != "undefined" %}
+            <div class="row">
+              <div class="col-sm-12 col-md-12 col-lg-12">
+                <p><a class="btn btn-primary btn-lg" href="/testList" role="button">
+                  开始
+                </a></p>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        {% if request.session.is_login == True %}
+          <div>
+            欢迎您：{{ request.session.user_name }}
+          </div>
+        {% else %}
+          <div>
+            欢迎您，请先登录
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

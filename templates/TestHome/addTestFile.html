@@ -1,0 +1,63 @@
+{% extends 'base.html' %} {% load static %}
+{% block pageStyle %}
+{% endblock %}
+
+{% block title %}FrexT 添加测试{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row topNav">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        {% include 'topNav.html' with role=request.session.role %}
+      </div>
+    </div>
+    <div class="row">
+      <p><a class="btn btn-primary btn-lg center-block" href="/addTest/" role="button">
+        添加测试题目
+      </a></p>
+    </div>
+    <div class="row" id="addTestFile">
+      <div class="col-sm-3 col-md-3 col-lg-3"></div>
+      <div class="col-sm-6 col-md-6 col-lg-6">
+        <form class="form-newTest" action="/addTestFile/" method="post" enctype="multipart/form-data">
+          {% if message %}
+            <div class="alert alert-success">{{ message }}</div>
+          {% endif %}
+
+          {% csrf_token %}
+          <h1 class="text-center">添加测试文件</h1>
+
+          <div class="form-group">
+            <h3>{{ addTestFile_form.topic.label_tag }}</h3>
+            {{ addTestFile_form.topic}}
+          </div>
+          <div class="form-group">
+            <h3>{{ addTestFile_form.files.label_tag }}</h3>
+            {{ addTestFile_form.files }}
+          </div>
+
+          <div class="row">
+            <button type="submit" class="btn btn-primary center-block" style="font-size: large">
+              添加文件
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-3 col-md-3 col-lg-3"></div>
+    </div>
+  </div>
+{#  <script>#}
+{#    function changeMode() {#}
+{#      let addTest = document.getElementById("addTest");#}
+{#      if(addTest.innerText === "添加测试题目"){#}
+{#          addTest.innerText = "上传测试文件"#}
+{#          document.getElementById("newTestForm").style.display = 'none';#}
+{#          document.getElementById("addTestFileForm").style.display = 'block';#}
+{#      } else {#}
+{#          addTest.innerText = "添加测试题目"#}
+{#          document.getElementById("newTestForm").style.display = 'block';#}
+{#          document.getElementById("addTestFileForm").style.display = 'none';#}
+{#      }#}
+{#    }#}
+{#  </script>#}
+{% endblock %}
