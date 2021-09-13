@@ -1,11 +1,11 @@
 from threading import Thread, Timer
 
-from Home.RocketMQHandler import RabbitMQHandler
+from Compile.RocketMQClient import JudgeRabbitMQHandler
 from FrexTTest.settings import Judge_Time_Unit
 
 
 def exection(content):
-    rabbitMQ = RabbitMQHandler()
+    rabbitMQ = JudgeRabbitMQHandler()
     result = rabbitMQ.call(content)
     return result[0], result[1], result[2]
 

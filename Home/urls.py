@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'testPage/(?P<t_uid>([0-9a-zA-Z_-]+))/$', views.test_page),
 
     path('upCode/', views.submit_code),
-    path('startCompile/', views.startCompile),
+    # path('startCompile/', views.start_compile),
     path('showLast/', views.show_last),
     # path('detectCompile/', views.detectCompile),
     # path('startJudge/', views.startJudge),

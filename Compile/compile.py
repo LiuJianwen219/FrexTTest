@@ -3,8 +3,8 @@ import time
 from urllib.parse import unquote
 
 import requests
-from Home.ZipUtilities import ZipUtilities
-from FrexTTest.settings import compileZipPath, compileBitPath, compileErrPath, Compile_MAX_Thread, Compile_Time_Unit
+from Compile.ZipUtilities import ZipUtilities
+from FrexTTest.settings import compileZipPath, compileBitPath, compileErrPath, Compile_Time_Unit
 from FrexTTest.settings import compileUrl
 
 from threading import Thread, Timer
@@ -113,22 +113,6 @@ class CompileThread(Thread):
     def get_contents(self):
         return self.content
 
-
-class TimeCounter():
-    def __init__(self):
-        super(TimeCounter, self).__init__()
-        self.time = 0
-
-    def time_add(self):
-        self.time += Compile_Time_Unit
-        Timer(Compile_Time_Unit, self.time_add).start()
-
-    def start(self):
-        Timer(Compile_Time_Unit, self.time_add).start()
-
-    def get_time(self):
-        return self.time
-
 #
 # class TimerThread(Thread):
 #     def __init__(self, timeout):
@@ -146,7 +130,7 @@ class TimeCounter():
 #             return None
 
 
-class CompileHandleThread():
+class CompileHandleThread:
     def __init__(self, compileThread, timeCounter):
         self.compilerThread = compileThread
         self.timeCounter = timeCounter

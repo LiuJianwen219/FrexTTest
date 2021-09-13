@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = '1@#dw5ut=#m3p+*e1x=^6s8p3rh!q42p2@j$_#9&h_0u_y1wzl'
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
@@ -73,7 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FrexTTest.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -97,7 +94,6 @@ DATABASES = {
     # }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -116,7 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -130,21 +125,17 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 
-
 STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
-#STATIC_ROOT = "/mnt/hgfs/0Web/exoticTest/static/"
-#STATIC_ROOT = "/home/exotic/exotic/exoticTest/static/"
+# STATIC_ROOT = "/mnt/hgfs/0Web/exoticTest/static/"
+# STATIC_ROOT = "/home/exotic/exotic/exoticTest/static/"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-
-
 
 # Exotic Test path configurations
 # Please
@@ -163,13 +154,14 @@ Rabbit_MQ_QueueID = "ExoticTest01"
 Socker_Server_IP = "10.14.30.15"
 Socker_Server_Port = 20200
 
-Compile_MAX_Time = 1200   # 秒
-Compile_Time_Unit = 5     # 秒
+Compile_MAX_Time = 1200  # 秒
+Compile_Time_Unit = 5  # 秒
 Compile_MAX_Thread = 4  # 最多的编译线程
-Judge_MAX_Time = 60   # 秒
-Judge_Time_Unit = 5    # 秒
-#Judge_MAX_Thread = 2  # 最多的评测线程
+Judge_MAX_Time = 60  # 秒
+Judge_Time_Unit = 5  # 秒
+# Judge_MAX_Thread = 2  # 最多的评测线程
 
-
-
-
+Compile_Server_Url = "http://192.168.80.150:31462/"
+Compile_Server_Api = "compile/"
+request_success = "OK"
+request_failed = "FAILED"

@@ -10,7 +10,7 @@
 
 {% block content %}
   <div class="hidden">
-    <input type="hidden" id="fid" value="{{ fid }}"/>
+    <input type="hidden" id="t_uid" value="{{ t_uid }}"/>
     <input type="hidden" id="grade" value="{{ grade }}"/>
     <input type="hidden" id="timu" value="{{ testFile }}">
   </div>
@@ -160,7 +160,7 @@
 
     function showLast() {
       let data = new FormData();
-      data.append("fid", $("#fid").val());
+      data.append("t_uid", $("#t_uid").val());
       data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
       $.ajax({
         url: "/showLast/",
@@ -205,7 +205,7 @@
     function upCode() {
       let data = new FormData();
       data.append("testUserCode", $("#testUserCode").val());
-      data.append("fid", $("#fid").val());
+      data.append("t_uid", $("#t_uid").val());
       data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
       $.ajax({
         url: "/upCode/",
@@ -246,7 +246,7 @@
       let data = new FormData();
       data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
       $.ajax({
-          url: "/startCompile/",
+          url: "/compile/startCompile/",
           type: 'POST',
           data: data,
           timeout:3600000,
