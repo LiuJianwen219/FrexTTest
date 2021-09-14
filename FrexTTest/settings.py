@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'Login',
     'Home',
     'Suggestion',
+    'Compile',
+    'Judge',
 ]
 
 MIDDLEWARE = [

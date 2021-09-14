@@ -8,11 +8,10 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django.views.decorators.csrf import csrf_exempt
 
 from Compile.compile_task import CompileTaskThread, send_task_to_rabbit_mq
-from Compile.judger import JudgeThread, exection, JudgeHandleThread, JudgeTimeCounter
+from Judge.judger import JudgeThread, exection, JudgeHandleThread, JudgeTimeCounter
 from Compile.thread_handler import TaskHandlerThread, TimeCounter
 from FrexTTest.settings import userFilesPath, Compile_MAX_Thread, Compile_MAX_Time, Judge_MAX_Time
 from Home.models import TestList, SubmitList
-from Login.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +149,7 @@ def detect_compile():
         if threadList[key].get_time() > Compile_MAX_Time:  # 表示编译超时
             print("compile timeout: " + json.dumps(threadList[key].get_contents()))
             submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
-            submit.status = "编译超时，请重新提交"
+            submit.status = "编译超时，请稍后重新提交"
             submit.message += "Failed: code compile task time out.\n"
             submit.save()
             needToDel.append(threadList[key].get_content("threadIndex"))
@@ -166,10 +165,12 @@ def detect_compile():
                 print("提交编译任务成功")
             else:
                 submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
-                submit.status = "提交编译任务失败"
+                submit.status = "提交编译任务失败，请重新提交"
                 submit.message += "Failed: code compile task submit error.\n"
                 submit.save()
-            needToDel.append(key)
+            # needToDel.append(key)
+        threadList[key].time_add()
+
 
     for k in needToDel:
         print("compile thread delete: " + json.dumps(threadList[k].get_contents()))

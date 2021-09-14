@@ -18,6 +18,9 @@ class TaskHandlerThread:
     def get_task_result(self):
         return self.task_thread.get_result()
 
+    def time_add(self):
+        self.time_counter.time_add()
+
     def get_time(self):
         return self.time_counter.get_time()
 
@@ -36,10 +39,12 @@ class TimeCounter:
 
     def time_add(self):
         self.time += Compile_Time_Unit
-        Timer(Compile_Time_Unit, self.time_add).start()
+        print(self.time, self.timeout)
+        # Timer(Compile_Time_Unit, self.time_add).start()
 
     def start(self):
-        Timer(Compile_Time_Unit, self.time_add).start()
+        print("time start")
+        # Timer(Compile_Time_Unit, self.time_add).start()
 
     def get_time(self):
         return self.time
