@@ -1,0 +1,20 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frext-compile-rabbit
+  labels:
+    app: frext-compile-rabbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frext-compile-rabbit
+  template:
+    metadata:
+      labels:
+        app: frext-compile-rabbit
+    spec:
+      containers:
+      - name: frext-compile-rabbit
+        image: frext-compile-rabbitmq:v0.0.5

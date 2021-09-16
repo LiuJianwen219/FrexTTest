@@ -1,6 +1,6 @@
 from threading import Thread, Timer
 
-from Compile.RocketMQClient import JudgeRabbitMQHandler
+from Judge.RabbitMQClient import JudgeRabbitMQHandler
 from FrexTTest.settings import Judge_Time_Unit
 
 

@@ -1,7 +1,7 @@
 from threading import Thread, Timer
 
 import logging
-from Compile.RocketMQClient import CompileRabbitMQHandler
+from Compile.RabbitMQClient import CompileRabbitMQHandler
 logger = logging.getLogger(__name__)
 
 
