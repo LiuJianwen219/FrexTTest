@@ -2,13 +2,16 @@ import json
 import logging
 import os
 import subprocess
+from datetime import datetime
+
+import requests
 from threading import Timer
 from django.http import HttpResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.views.decorators.csrf import csrf_exempt
 
 from Compile.compile_task import CompileTaskThread, send_task_to_rabbit_mq
-from Judge.judger import JudgeThread, exection, JudgeHandleThread, JudgeTimeCounter
+from Judge.judger import JudgeThread, JudgeHandleThread, JudgeTimeCounter
 from Compile.thread_handler import TaskHandlerThread, TimeCounter
 from FrexTTest.settings import userFilesPath, Compile_MAX_Thread, Compile_MAX_Time, Judge_MAX_Time
 from Home.models import TestList, SubmitList
@@ -167,7 +170,9 @@ def detect_compile():
                 submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                 submit.status = "提交编译任务失败，请重新提交"
                 submit.message += "Failed: code compile task submit error.\n"
+                submit.compile_end_time = datetime.now()
                 submit.save()
+                needToDel.append(key)
             # needToDel.append(key)
         threadList[key].time_add()
 
@@ -194,8 +199,19 @@ def compile_result(request):
         submit = SubmitList.objects.get(uid=values["submitId"])
         submit.status = values["status"]
         submit.message = submit.message + values["message"] + "\n"
+        submit.compile_end_time = datetime.now()
         print(submit.status)
         submit.save()
+
+        # if values['status'] == "编译成功":
+        # 发起测试请求
+        r = requests.post(url="http://frext-online-svc:8030/judge/startJudge/", data=values)
+        # 更新数据库
+        if r.status_code.__str__() == "200":
+            logger.error("Request Result success: " + r.headers.__str__())
+        else:
+            logger.error("Request Result failed: " + r.headers.__str__())
+
         data = {"state": "OK", "testState": "", "info": ""}
         return HttpResponse(json.dumps(data), content_type='application/json')
 
@@ -208,7 +224,7 @@ def detectCompile():
     global threadList
 
     global countCom
-    if len(threadList) > 0 or countCom < 10:
+    if len(threadList) > 0 or countCom < 3:
         print("detect com " + str(len(threadList)))
         if len(threadList) == 0:
             countCom += 1

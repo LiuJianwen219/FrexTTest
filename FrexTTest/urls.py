@@ -27,5 +27,6 @@ urlpatterns = [
     path('suggestion/', include('Suggestion.urls')),
     # path('', include('Test.urls')),
     path('compile/', include('Compile.urls')),
+    path('judge/', include('Judge.urls')),
     path('', include('Home.urls')),
 ]

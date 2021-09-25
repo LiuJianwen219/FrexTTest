@@ -65,6 +65,8 @@ class SubmitList(models.Model):
     compile_end_time = models.DateTimeField(null=True)  # end compile time
     test_start_time = models.DateTimeField(null=True)  # start test time
     test_end_time = models.DateTimeField(null=True)  # end test time
+    comTime = models.IntegerField(default=-1)
+    exeTime = models.IntegerField(default=-1)
 
 
 class ValidSubmitList(models.Model):

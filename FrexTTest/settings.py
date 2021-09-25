@@ -156,21 +156,21 @@ Rabbit_MQ_VHOST = "exotic01"
 Rabbit_MQ_QueueID_Compile = "FrexTCompile01"
 Rabbit_MQ_QueueID_Judge = "FrexTJudge01"
 
-Socker_Server_IP = "10.14.30.15"
-Socker_Server_Port = 20200
+Socker_Server_IP = "frext-socket-svc"
+Socker_Server_Port = 8040
 
-Compile_MAX_Time = 1200  # 秒
+Compile_MAX_Time = 2  # 秒
 Compile_Time_Unit = 5  # 秒
 Compile_MAX_Thread = 4  # 最多的编译线程，可调整
-Judge_MAX_Time = 60  # 秒
+Judge_MAX_Time = 2  # 秒
 Judge_Time_Unit = 5  # 秒
 Judge_MAX_Thread = 4  # 最多的评测线程
 
 Compile_Server_Url = "http://frext-compile-svc:8012/"
 Compile_Server_Api = "compile/"
 
-Judge_Server_Url = "http://192.168.80.150:31462/"
-Judge_Server_Api = "judge/"
+# Judge_Server_Url = "http://192.168.80.150:31462/"
+# Judge_Server_Api = "judge/"
 
 request_success = "OK"
 request_failed = "FAILED"

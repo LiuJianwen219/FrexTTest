@@ -1,5 +1,6 @@
 # Communication protocol
 types = [
+    'WHO_YOU_ARE',
     'AUTH_USER',            # 0
     'AUTH_SUCC_USER',
     'AUTH_FAIL_USER',
