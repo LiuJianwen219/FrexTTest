@@ -334,6 +334,11 @@ def see_info(request, upId):
     return HttpResponse(info, content_type="text/plain; charset=utf-8")
 
 
+def see_result(request, upId):
+    result = SubmitList.objects.get(uid=upId).result
+    return HttpResponse(result, content_type="text/plain; charset=utf-8")
+
+
 def pass_record(request, u_uid):
     passRecList = []
     if u_uid:

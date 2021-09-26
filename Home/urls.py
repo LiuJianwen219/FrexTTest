@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'submission/(?P<u_uid>(.+))/$', views.get_submission),
     url(r'seeCode/(?P<upId>(.+))/$', views.see_code),
     url(r'seeInfo/(?P<upId>(.+))/$', views.see_info),
+    url(r'seeResult/(?P<upId>(.+))/$', views.see_result),
 
     path('passRecAll/', views.pass_record_all),
     url(r'passRec/(?P<u_uid>(.+))/$', views.pass_record),
