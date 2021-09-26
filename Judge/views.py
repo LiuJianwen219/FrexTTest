@@ -1,3 +1,4 @@
+import decimal
 from datetime import datetime
 
 from django.shortcuts import render
@@ -140,7 +141,7 @@ def detectJudge():
                 for res in testResult:
                     if res['result'] == "答案正确":
                         cnt = cnt + 1
-                grade = round(cnt / len(testResult) * test.grade, 2)
+                grade = round(decimal.Decimal(cnt/len(testResult)) * test.grade, 2)
                 state = "try"
                 if cnt == len(testResult):
                     state = "pass"
@@ -161,7 +162,7 @@ def detectJudge():
             submit.save()
 
             if state == "pass":
-                test.passNum += 1  # 测试通过数目 +1
+                test.pass_number += 1  # 测试通过数目 +1
                 test.save()
                 # 修改，通过条件下用时最少的代码
                 v_submits = ValidSubmitList.objects.filter(test=test, user=user)

@@ -96,11 +96,7 @@ class WebHandle:
         self.content = content
 
     def on_open(self):
-        data = {
-            'type': AUTH_RABBIT,
-        }
-        print("AUTH_RABBIT")
-        self.ws.send(json.dumps(data))
+        print("RABBIT on open")
 
     def on_message(self, message):
         print(message)
