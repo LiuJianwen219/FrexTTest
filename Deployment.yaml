@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: frext-compile-rabbit
-        image: wxwd14388/frext-compile-rabbitmq:v0.0.6
+        image: wxwd14388/frext-compile-rabbitmq:v0.0.7
 
 ---
 apiVersion: apps/v1

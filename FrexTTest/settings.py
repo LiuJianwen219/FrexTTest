@@ -148,11 +148,11 @@ compileBitPath = "/tmp/bit/"
 compileErrPath = "/tmp/comErr/"
 compileUrl = "http://10.14.30.15:9000/compilefile/"
 
-Rabbit_MQ_IP = "10.14.30.15"
+Rabbit_MQ_IP = "47.96.95.218"
 Rabbit_MQ_Port = 5672
-Rabbit_MQ_USER = "exoticTest01"
-Rabbit_MQ_PASS = "exoticTest"
-Rabbit_MQ_VHOST = "exotic01"
+Rabbit_MQ_USER = "frext"
+Rabbit_MQ_PASS = "zetong103!"
+Rabbit_MQ_VHOST = "frext"
 Rabbit_MQ_QueueID_Compile = "FrexTCompile01"
 Rabbit_MQ_QueueID_Judge = "FrexTJudge01"
 
