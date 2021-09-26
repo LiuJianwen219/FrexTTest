@@ -28,6 +28,8 @@ from FrexTTest.settings import Judge_MAX_Time
 
 import logging
 
+from Login.models import User
+
 logger = logging.getLogger(__name__)
 
 compileChecker = None
@@ -125,7 +127,7 @@ def detectJudge():
             userId = judgeThreadList[key].get_content("userId")
             submit = SubmitList.objects.get(uid=submitId)
             test = TestList.objects.get(uid=testId)
-            user = TestList.objects.get(uid=userId)
+            user = User.objects.get(uid=userId)
 
             r, cycle, testResult = judgeThreadList[key].get_judge()
             submit.exeTime = judgeThreadList[key].get_time()
