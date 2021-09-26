@@ -335,7 +335,7 @@ def see_info(request, upId):
 
 
 def see_result(request, upId):
-    result = SubmitList.objects.get(uid=upId).result
+    result = json.loads(SubmitList.objects.get(uid=upId).result)
     return HttpResponse(result, content_type="text/plain; charset=utf-8")
 
 

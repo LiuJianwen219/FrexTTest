@@ -134,7 +134,7 @@ def detectJudge():
             submit.exeTime = judgeThreadList[key].get_time()
 
             if r == 0:
-                result = testResult
+                result = json.dumps(testResult)
                 status = "测试流程执行完成"
                 message = "Success: test is complete.\n"
                 cnt = 0
