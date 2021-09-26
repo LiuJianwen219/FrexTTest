@@ -166,7 +166,11 @@ def detect_compile():
                 # submit.message += "Success: code compile task submit complete.\n"
                 # submit.save()
                 if not threadList[key].task_thread.is_sub_over():
-                    print("提交编译任务成功")
+                    submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
+                    submit.status = "提交编译任务成功"
+                    submit.message += "Success: code compile task submit complete.\n"
+                    submit.compile_start_time = datetime.now()
+                    submit.save()
                     threadList[key].task_thread.set_sub_over()
                 if threadList[key].task_thread.is_over():
                     needToDel.append(key)

@@ -367,12 +367,12 @@ def pass_record_all(request):
 
 
 def see_code_valid(request, passId):
-    code = ValidSubmitList.objects.get(uid=passId).submit.code
+    code = SubmitList.objects.get(uid=passId).code
     return HttpResponse(code, content_type="text/plain; charset=utf-8")
 
 
 def see_info_valid(request, passId):
-    info = ValidSubmitList.objects.get(uid=passId).submit.message
+    info = SubmitList.objects.get(uid=passId).message
     return HttpResponse(info, content_type="text/plain; charset=utf-8")
 
 

@@ -29,8 +29,8 @@ urlpatterns = [
 
     path('passRecAll/', views.pass_record_all),
     url(r'passRec/(?P<u_uid>(.+))/$', views.pass_record),
-    url(r'seeCodePass/(?P<passId>([0-9]+))/$', views.see_code_valid),
-    url(r'seeInfoPass/(?P<passId>([0-9]+))/$', views.see_info_valid),
+    url(r'seeCodePass/(?P<passId>(.+))/$', views.see_code_valid),
+    url(r'seeInfoPass/(?P<passId>(.+))/$', views.see_info_valid),
 
     url(r'download/$', views.download),
 
