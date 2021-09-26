@@ -165,10 +165,10 @@ def detect_compile():
                 # submit.status = "提交编译任务成功"
                 # submit.message += "Success: code compile task submit complete.\n"
                 # submit.save()
-                if not threadList[key].is_sub_over():
+                if not threadList[key].task_thread.is_sub_over():
                     print("提交编译任务成功")
-                    threadList[key].set_sub_over()
-                if threadList[key].is_over():
+                    threadList[key].task_thread.set_sub_over()
+                if threadList[key].task_thread.is_over():
                     needToDel.append(key)
             else:
                 submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
@@ -208,7 +208,7 @@ def compile_result(request):
         submit.save()
 
         global threadList
-        threadList[values["threadIndex"]].set_over()
+        threadList[values["threadIndex"]].task_thread.set_over()
 
         # if values['status'] == "编译成功":
         # 发起测试请求
