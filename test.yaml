@@ -1,29 +1,29 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: frext-test-rabbit
-  labels:
-    app: frext-test-rabbit
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: frext-test-rabbit
-  template:
-    metadata:
-      labels:
-        app: frext-test-rabbit
-    spec:
-      containers:
-      - name: frext-test-rabbit
-        image: wxwd14388/frext-test-rabbitmq:v0.0.3
-        command: ["/bin/sh"]
-        args: ["-c", "while true; do echo hello; sleep 4;done"]
-        volumeMounts:
-        - mountPath: /tmp/FrexT
-          name: frext-job
-      volumes:
-        - name: frext-job
-          hostPath:
-            path: /mnt/hgfs/0Web
-            type: Directory
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: frext-test-rabbit
+#  labels:
+#    app: frext-test-rabbit
+#spec:
+#  replicas: 2
+#  selector:
+#    matchLabels:
+#      app: frext-test-rabbit
+#  template:
+#    metadata:
+#      labels:
+#        app: frext-test-rabbit
+#    spec:
+#      containers:
+#      - name: frext-test-rabbit
+#        image: wxwd14388/frext-test-rabbitmq:v0.0.3
+#        command: ["/bin/sh"]
+#        args: ["-c", "while true; do echo hello; sleep 4;done"]
+#        volumeMounts:
+#        - mountPath: /tmp/FrexT
+#          name: frext-job
+#      volumes:
+#        - name: frext-job
+#          hostPath:
+#            path: /mnt/hgfs/0Web
+#            type: Directory

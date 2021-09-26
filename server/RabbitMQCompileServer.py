@@ -57,7 +57,14 @@ class CompileRabbitMQServer:
         r = requests.post(url=url, params=content, data=content)
         print(r.content)
         response = json.loads(r.content.decode())
-        data = {'state': response['state'], 'message': response['message'], 'content': response['content']}
+        data = {
+            'state': response['state'],
+            'message': response['message'],
+            'content': response['content'],
+            'threadIndex': content['threadIndex'],
+        }
+        print("work process:")
+        print(data)
         # data = {'state': "OK", 'testResult': testResult, "usingCycle": cycle, "info": info}
         return json.dumps(data)
 
