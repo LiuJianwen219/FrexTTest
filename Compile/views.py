@@ -208,10 +208,9 @@ def compile_result(request):
         submit.status = values["status"]
         submit.message = submit.message + values["message"] + "\n"
         submit.compile_end_time = datetime.now()
-        print(submit.status)
-        submit.save()
-
         global threadList
+        submit.comTime = threadList[values["threadIndex"]].get_time()
+        submit.save()
         threadList[values["threadIndex"]].task_thread.set_over()
 
         # if values['status'] == "编译成功":
