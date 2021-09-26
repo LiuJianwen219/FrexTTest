@@ -11,6 +11,8 @@ class CompileTaskThread(Thread):
         self.func = func
         self.content = content
         self.result = None
+        self.over = False
+        self.submit_over = False
 
     def run(self):
         self.result = self.func(self.content)
@@ -22,6 +24,18 @@ class CompileTaskThread(Thread):
             return self.result
         except ConnectionError:
             return None
+
+    def set_sub_over(self):
+        self.submit_over = True
+
+    def is_sub_over(self):
+        return self.submit_over
+
+    def set_over(self):
+        self.over = True
+
+    def is_over(self):
+        return self.over
 
     def get_content(self, key):
         return self.content[key]

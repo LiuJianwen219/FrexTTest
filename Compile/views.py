@@ -157,15 +157,19 @@ def detect_compile():
             submit.save()
             needToDel.append(threadList[key].get_content("threadIndex"))
         if threadList[key].get_task_result() is not None:  # 表示编译任务提交到了RabbitMQ
-            print("task submit over: " + json.dumps(threadList[key].get_contents()))
+            # print("task submit over: " + json.dumps(threadList[key].get_contents()))
             result = threadList[key].get_task_result()
-            print("task submit over: " + json.dumps(result))
+            # print("task submit over: " + json.dumps(result))
             if result['state'] == 'OK':
                 # submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                 # submit.status = "提交编译任务成功"
                 # submit.message += "Success: code compile task submit complete.\n"
                 # submit.save()
-                print("提交编译任务成功")
+                if not threadList[key].is_sub_over():
+                    print("提交编译任务成功")
+                    threadList[key].set_sub_over()
+                if threadList[key].is_over():
+                    needToDel.append(key)
             else:
                 submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                 submit.status = "提交编译任务失败，请重新提交"
@@ -173,7 +177,6 @@ def detect_compile():
                 submit.compile_end_time = datetime.now()
                 submit.save()
                 needToDel.append(key)
-            # needToDel.append(key)
         threadList[key].time_add()
 
 
@@ -193,6 +196,7 @@ def compile_result(request):
             "state":        request.POST.get("state", None),
             "status":       request.POST.get("status", None),
             "message":      request.POST.get("message", None),
+            "threadIndex":  request.POST.get("threadIndex", None),
         }
         print(values)
         print(values["status"])
@@ -202,6 +206,9 @@ def compile_result(request):
         submit.compile_end_time = datetime.now()
         print(submit.status)
         submit.save()
+
+        global threadList
+        threadList[values["threadIndex"]].set_over()
 
         # if values['status'] == "编译成功":
         # 发起测试请求
