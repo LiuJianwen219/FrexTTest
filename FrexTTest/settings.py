@@ -159,10 +159,10 @@ Rabbit_MQ_QueueID_Judge = "FrexTJudge01"
 Socker_Server_IP = "frext-socket-svc"
 Socker_Server_Port = 8040
 
-Compile_MAX_Time = 2  # 秒
+Compile_MAX_Time = 1200  # 秒
 Compile_Time_Unit = 5  # 秒
 Compile_MAX_Thread = 4  # 最多的编译线程，可调整
-Judge_MAX_Time = 2  # 秒
+Judge_MAX_Time = 1200  # 秒
 Judge_Time_Unit = 5  # 秒
 Judge_MAX_Thread = 4  # 最多的评测线程
 
