@@ -110,14 +110,14 @@ def test_page(request, t_uid):
 
 def show_last(request):
     if request.method == "POST":
-        uid = request.POST.get("uid", None)
-        print("show_last: uid ", uid)
-        test = TestList.objects.get(uid=uid)
-        user = User.objects.get(name=request.session["user_name"])
-        upRecords = SubmitList.objects.filter(test=test, user=user).order_by("upTime")
+        t_uid = request.POST.get("t_uid", None)
+        print("show_last: t_uid ", t_uid)
+        test = TestList.objects.get(uid=t_uid)
+        user = User.objects.get(uid=request.session["u_uid"])
+        upRecords = SubmitList.objects.filter(test=test, user=user).order_by("submit_time")
 
         upRecord = upRecords.last()
-        data = {"state": "OK", "upTime": upRecord.upTime, "testState": upRecord.state,
+        data = {"state": "OK", "upTime": upRecord.submit_time, "testState": upRecord.status,
                 "recvCode": upRecord.upCode, "testGrade": upRecord.grade}
         if upRecord.result:
             data["testResult"] = json.loads(upRecord.result)
