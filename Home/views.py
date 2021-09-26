@@ -118,7 +118,7 @@ def show_last(request):
 
         upRecord = upRecords.last()
         data = {"state": "OK", "upTime": upRecord.submit_time, "testState": upRecord.status,
-                "recvCode": upRecord.upCode, "testGrade": upRecord.grade}
+                "recvCode": upRecord.code, "testGrade": upRecord.score}
         if upRecord.result:
             data["testResult"] = json.loads(upRecord.result)
 

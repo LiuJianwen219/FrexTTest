@@ -36,29 +36,31 @@
         </ul>
       </div>
       <div class="col-sm-8 col-md-8 col-lg-8">
-      <div class="col-sm-8 col-md-8 col-lg-8">
-        <div class="row">
-          <div class="col-sm-2 col-md-2 col-lg-2">
-            <p><a class="btn btn-primary" href="/testList" role="button">
-              返回
-            </a></p>
+          <div class="row">
+              <div class="col-sm-10 col-md-10 col-lg-10">
+                  <div class="row">
+                      <div class="col-sm-2 col-md-2 col-lg-2">
+                        <p><a class="btn btn-primary" href="/testList" role="button">
+                          返回
+                        </a></p>
+                      </div>
+                      <div class="col-sm-10 col-md-10 col-lg-10">
+                        <p id="testType" class="text-center">{{ type }}</p>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div id="testContent">测试题目</div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                  <p>出题单位：{{ company }}</p>
+                  <p>出题人：{{ author }}</p>
+              </div>
           </div>
-          <div class="col-sm-10 col-md-10 col-lg-10">
-            <p id="testType" class="text-center">{{ type }}</p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-12">
-            <div id="testContent">测试题目</div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-2 col-md-2 col-lg-2">
-          <p>出题单位：{{ company }}</p>
-          <p>出题人：{{ author }}</p>
-      </div>
-      <div class="row">
-        <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2 col-lg-10 col-lg-offset-2">
+          <div class="row">
+            <div class="col-sm-10 col-md-10 col-lg-10">
           {% csrf_token %}
           <textarea id="testUserCode" style="resize:none; height: 500px; width: 100%;" placeholder="v代码"></textarea>
           <button onclick="upCode()" href="#" data-toggle="modal" data-target="#testResultBoard">
@@ -134,8 +136,8 @@
           </div>
 
         </div>
+          </div>
       </div>
-    </div>
     <hr>
   </div>
 </div> <!-- /container -->
