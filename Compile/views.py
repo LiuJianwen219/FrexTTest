@@ -215,7 +215,7 @@ def compile_result(request):
 
         # if values['status'] == "编译成功":
         # 发起测试请求
-        r = requests.post(url="http://frext-online-svc:8030/judge/startJudge/", data=values)
+        r = requests.post(url="http://frext-testing-svc:8030/judge/startJudge/", data=values)
         # 更新数据库
         if r.status_code.__str__() == "200":
             logger.error("Request Result success: " + r.headers.__str__())
