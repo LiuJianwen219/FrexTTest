@@ -10,7 +10,7 @@ COPY ./ /FrexT
 WORKDIR /FrexT/server
 
 # start
-# ENTRYPOINT ["python", "RabbitMQTestServer.py"]
+# ENTRYPOINT ["python", "RabbitMQCompileServer.py"]
 
 ## make environment
 #RUN ["pip", "install", "-r", "requirements.txt"]
