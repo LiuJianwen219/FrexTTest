@@ -20,7 +20,14 @@ spec:
         image: wxwd14388/frext-rabbitmq:v0.0.0
         command: ["/bin/sh"]
         args: ["-c", "while true; do echo hello; sleep 4;done"]
-
+        volumeMounts:
+        - mountPath: /tmp/FrexT
+          name: frext-job
+      volumes:
+      - name: frext-job
+        hostPath:
+          path: /root/FrexT
+          type: Directory
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -43,3 +50,11 @@ spec:
         image: wxwd14388/frext-rabbitmq:v0.0.0
         command: ["/bin/sh"]
         args: ["-c", "while true; do echo hello; sleep 4;done"]
+        volumeMounts:
+        - mountPath: /tmp/FrexT
+          name: frext-job
+      volumes:
+      - name: frext-job
+        hostPath:
+          path: /root/FrexT
+          type: Directory
