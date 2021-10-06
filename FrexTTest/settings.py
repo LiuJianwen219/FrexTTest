@@ -148,7 +148,7 @@ compileBitPath = "/tmp/bit/"
 compileErrPath = "/tmp/comErr/"
 compileUrl = "http://10.14.30.15:9000/compilefile/"
 
-Rabbit_MQ_IP = "http://rabbit-mq"
+Rabbit_MQ_IP = "rabbit-mq"
 Rabbit_MQ_Port = 5672
 Rabbit_MQ_USER = "frext"
 Rabbit_MQ_PASS = "zetong103!"
