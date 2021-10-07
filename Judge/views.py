@@ -194,7 +194,7 @@ def detectJudge():
             submitId = judgeThreadList[key].get_content("submitId")
             submit = SubmitList.objects.get(uid=submitId)
             submit.status = "开启评测，测试{0}秒".format(judgeThreadList[key].get_time())
-            submit.message += time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(now / 1000)) + \
+            submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + \
                               "Running: testing {0} seconds\n".format(judgeThreadList[key].get_time())
 
     for k in needToDel:
