@@ -336,7 +336,7 @@ def see_info(request, upId):
 
 def see_result(request, upId):
     results = SubmitList.objects.filter(uid=upId)
-    if len(results) > 0:
+    if len(results) > 0 and results[0].result:
         result = json.loads(results[0].result)
     else:
         result = "not ready please see later."
