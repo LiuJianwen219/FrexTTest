@@ -87,7 +87,7 @@ def start_judge(request):
 
     submit = SubmitList.objects.get(uid=values["submitId"])
     submit.status = "开启评测"
-    submit.message = submit.message + "Start: test\n"
+    submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Start: test\n"
     submit.test_start_time = datetime.now()
     submit.save()
 
@@ -116,7 +116,7 @@ def detectJudge():
             submitId = judgeThreadList[key].get_content("submitId")
             submit = SubmitList.objects.get(uid=submitId)
             submit.status = "评测超时失败"
-            submit.message = submit.message + "Timeout: test\n"
+            submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Timeout: test\n"
             submit.test_end_time = datetime.now()
             submit.save()
 
@@ -136,7 +136,7 @@ def detectJudge():
             if r == 0:
                 result = json.dumps(testResult)
                 status = "测试流程执行完成"
-                message = "Success: test is complete.\n"
+                message = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Success: test is complete.\n"
                 cnt = 0
                 for res in testResult:
                     if res['result'] == "答案正确":
@@ -148,7 +148,7 @@ def detectJudge():
             else:
                 result = ""
                 status = "测试流程失败（测试超时，请检查代码）"
-                message = "Failed: test is not complete.\n"
+                message = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: test is not complete.\n"
                 grade = 0.00
                 state = "try"
 
@@ -157,7 +157,7 @@ def detectJudge():
             submit.score = grade
             submit.result = result
             submit.cycle = cycle
-            submit.message = submit.message + message
+            submit.message += message
             submit.test_end_time = datetime.now()
             submit.save()
 
@@ -195,7 +195,7 @@ def detectJudge():
             submit = SubmitList.objects.get(uid=submitId)
             submit.status = "开启评测，测试{0}秒".format(judgeThreadList[key].get_time())
             submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + \
-                              "Running: testing {0} seconds\n".format(judgeThreadList[key].get_time())
+                              " Running: testing {0} seconds\n".format(judgeThreadList[key].get_time())
 
     for k in needToDel:
         print("judge delete: " + k)

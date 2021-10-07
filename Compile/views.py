@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import subprocess
+import time
 from datetime import datetime
 
 import requests
@@ -153,7 +154,7 @@ def detect_compile():
             print("compile timeout: " + json.dumps(threadList[key].get_contents()))
             submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
             submit.status = "编译超时，请稍后重新提交"
-            submit.message += "Failed: code compile task time out.\n"
+            submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code compile task time out.\n"
             submit.save()
             needToDel.append(threadList[key].get_content("threadIndex"))
         if threadList[key].get_task_result() is not None:  # 表示编译任务提交到了RabbitMQ
@@ -168,7 +169,7 @@ def detect_compile():
                 if not threadList[key].task_thread.is_sub_over():
                     submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                     submit.status = "提交编译任务成功"
-                    submit.message += "Success: code compile task submit complete.\n"
+                    submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Success: code compile task submit complete.\n"
                     submit.compile_start_time = datetime.now()
                     submit.save()
                     threadList[key].task_thread.set_sub_over()
@@ -177,12 +178,12 @@ def detect_compile():
                 else:
                     submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                     submit.status = "提交编译任务成功，编译{0}秒".format(threadList[key].get_time())
-                    submit.message += "Running: compile {0} seconds\n".format(threadList[key].get_time())
+                    submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Running: compile {0} seconds\n".format(threadList[key].get_time())
                     submit.save()
             else:
                 submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                 submit.status = "提交编译任务失败，请重新提交"
-                submit.message += "Failed: code compile task submit error.\n"
+                submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code compile task submit error.\n"
                 submit.compile_end_time = datetime.now()
                 submit.save()
                 needToDel.append(key)
@@ -211,7 +212,7 @@ def compile_result(request):
         print(values["status"])
         submit = SubmitList.objects.get(uid=values["submitId"])
         submit.status = values["status"]
-        submit.message = submit.message + values["message"] + "\n"
+        submit.message += values["message"] + "\n"
         submit.compile_end_time = datetime.now()
         global threadList
         submit.comTime = threadList[values["threadIndex"]].get_time()
