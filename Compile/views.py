@@ -172,8 +172,13 @@ def detect_compile():
                     submit.compile_start_time = datetime.now()
                     submit.save()
                     threadList[key].task_thread.set_sub_over()
-                if threadList[key].task_thread.is_over():
+                elif threadList[key].task_thread.is_over():
                     needToDel.append(key)
+                else:
+                    submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
+                    submit.status = "提交编译任务成功，编译{0}秒".format(threadList[key].get_time())
+                    submit.message += "Running: compile {0} seconds\n".format(threadList[key].get_time())
+                    submit.save()
             else:
                 submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                 submit.status = "提交编译任务失败，请重新提交"
