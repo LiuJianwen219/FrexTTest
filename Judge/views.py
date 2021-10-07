@@ -121,7 +121,7 @@ def detectJudge():
             submit.save()
 
             needToDel.append(key)
-        if judgeThreadList[key].get_judge() is not None:
+        elif judgeThreadList[key].get_judge() is not None:
             print("judge end: " + key)
             submitId = judgeThreadList[key].get_content("submitId")
             testId = judgeThreadList[key].get_content("testId")
@@ -141,7 +141,7 @@ def detectJudge():
                 for res in testResult:
                     if res['result'] == "答案正确":
                         cnt = cnt + 1
-                grade = round(decimal.Decimal(cnt/len(testResult)) * test.grade, 2)
+                grade = round(decimal.Decimal(cnt / len(testResult)) * test.grade, 2)
                 state = "try"
                 if cnt == len(testResult):
                     state = "pass"
@@ -190,6 +190,12 @@ def detectJudge():
                     b_submits[0].save()
 
             needToDel.append(key)
+        else:
+            submitId = judgeThreadList[key].get_content("submitId")
+            submit = SubmitList.objects.get(uid=submitId)
+            submit.status = "开启评测，测试{0}秒".format(judgeThreadList[key].get_time())
+            submit.message += time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(now / 1000)) + \
+                              "Running: testing {0} seconds\n".format(judgeThreadList[key].get_time())
 
     for k in needToDel:
         print("judge delete: " + k)
