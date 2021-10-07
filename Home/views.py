@@ -83,7 +83,6 @@ def test_list(request):
     content = {
         'testList': testLists
     }
-    print(content)
     return render(request, "TestHome/testList.html", content)
 
 
@@ -111,7 +110,6 @@ def test_page(request, t_uid):
 def show_last(request):
     if request.method == "POST":
         t_uid = request.POST.get("t_uid", None)
-        print("show_last: t_uid ", t_uid)
         test = TestList.objects.get(uid=t_uid)
         user = User.objects.get(uid=request.session["u_uid"])
         upRecords = SubmitList.objects.filter(test=test, user=user).order_by("submit_time")
@@ -131,8 +129,8 @@ def add_test(request):
     if request.method == "POST":
         if request.session['is_login'] and request.session['role'] == 'admin':
             newTest_form = forms.NewTestForm(request.POST, request.FILES)
-            print(newTest_form)
-            print(newTest_form.is_valid())
+            # print(newTest_form)
+            # print(newTest_form.is_valid())
             if newTest_form.is_valid():
                 testType = str(newTest_form.cleaned_data.get('testType')).isdecimal()
                 grade = str(newTest_form.cleaned_data.get('grade')).isdecimal()
@@ -244,12 +242,12 @@ def submit_code(request):
                 row.state = state_try
                 row.code = code
                 row.status = "代码提交成功"
-                row.message = "Success: code submit complete.\n"
+                row.message = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Success: code submit complete.\n"
                 row.save()
             else:
                 row.code = code
                 row.status = "代码提交失败"
-                row.message = "Success: code submit complete.\n"
+                row.message = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code submit complete.\n"
                 row.save()
 
         test.submit_number += 1  # 题目提交数目 +1
@@ -392,9 +390,9 @@ def ranking(request):
         annotate(Sum("submit__score"), Count("user__name"), Max("submit__submit_time")).order_by("user__name")
     persons = User.objects.all().values("name").order_by("name")
 
-    print(gradeLists)
-    print(passLists)
-    print(persons)
+    # print(gradeLists)
+    # print(passLists)
+    # print(persons)
 
     rankings = []
 
@@ -439,7 +437,7 @@ def ranking(request):
                              "allG": 0.00,
                              "allT": "~~"})
 
-    print(rankings)
+    # print(rankings)
 
     rankings.sort(key=lambda x: (-x["passN"], -x["passG"],
                                  -x["allN"], -x["allG"], x["passT"], x["allT"]))
