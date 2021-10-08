@@ -23,6 +23,9 @@ tests_suffix = ".v"
 bits_API = "bits"
 bits_suffix = ".bit"
 
+rpts_API = "rpts"
+rpts_suffix = ".rpt"
+
 logs_API = "logs"
 logs_suffix = ".log"
 

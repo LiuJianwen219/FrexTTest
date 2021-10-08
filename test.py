@@ -20,7 +20,7 @@ def get_tests():
     testId = "412c72d4-1e80-11ec-9233-12dcc95ac57f"
     submitId = "2eede7bc-283d-11ec-bf42-1a069e0b09f6"
     topic = "mod60"
-    url = const.file_server_url + "rpts" + "/"
+    url = const.file_server_url + const.rpts_API + "/"
     values = {
         const.c_userId: userId,
         const.c_testId: testId,
@@ -32,9 +32,11 @@ def get_tests():
         logger.error("Request failed: " + r.headers.__str__())
         return const.request_failed
 
+    print(r.content)
+
     if r.headers['content-type'] == "application/octet-stream" and r.content:
         dest_direction = const.work_dir
-        dest_filename = topic + const.tests_suffix
+        dest_filename = topic + const.rpts_suffix
         if not file_writer(dest_direction, dest_filename, r.content):
             return const.request_failed
         return const.request_success
