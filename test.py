@@ -32,7 +32,18 @@ def get_tests():
         logger.error("Request failed: " + r.headers.__str__())
         return const.request_failed
 
-    print(r.content)
+    print(r.content.__str__().find("Slice LUTs"))
+    index = r.content.__str__().find("Slice LUTs")
+    print(r.content.__str__()[index:r.content.__str__().find("\\n", index)].split("|"))
+    strs = r.content.__str__()[index:r.content.__str__().find("\\n", index)].split("|")
+    print(int(strs[1]))
+    
+    print(r.content.__str__().find("Slice Registers"))
+    index = r.content.__str__().find("Slice Registers")
+    print(r.content.__str__()[index:r.content.__str__().find("\\n", index)].split("|"))
+    strs = r.content.__str__()[index:r.content.__str__().find("\\n", index)].split("|")
+    print(int(strs[1]))
+    
 
     if r.headers['content-type'] == "application/octet-stream" and r.content:
         dest_direction = const.work_dir
