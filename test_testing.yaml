@@ -52,12 +52,18 @@ spec:
         command: ["/bin/sh"]
         args: ["-c", "while true; do echo hello; sleep 4;done"]
         volumeMounts:
-        - mountPath: /tmp/FrexT
-          name: frext-job
+        - name: frext-job
+          mountPath: /tmp/FrexT
+        - name: fs
+          mountPath: /data/FrexT
         ports:
           - containerPort: 8030
       volumes:
         - name: frext-job
           hostPath:
             path: /root/FrexT/FrextTest
+            type: Directory
+        - name: fs
+          hostPath:
+            path: /root/FrexT_data/frext-file-system/log_testing
             type: Directory
