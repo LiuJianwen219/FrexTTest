@@ -241,6 +241,15 @@ def compile_result(request):
                 logger.error("Request Result success: " + r.headers.__str__())
             else:
                 logger.error("Request Result failed: " + r.headers.__str__())
+        else:
+            submit = SubmitList.objects.get(uid=values["submitId"])
+            submit.status = values["status"]
+            submit.message += values["message"] + "\n"
+            submit.compile_end_time = datetime.now()
+            global threadList
+            submit.comTime = threadList[values["threadIndex"]].get_time()
+            submit.save()
+            threadList[values["threadIndex"]].task_thread.set_over()
 
         data = {"state": "OK", "testState": "", "info": ""}
         return HttpResponse(json.dumps(data), content_type='application/json')
