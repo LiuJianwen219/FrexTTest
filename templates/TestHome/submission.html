@@ -74,17 +74,17 @@
                   <td>{{ T.ffs }}</td>
                   {% if request.session.role == "admin" %}
                     <td><a href="/seeCode/{{ T.upId }}/">代码</a></td>
-                    <td><a href="/seeInfo/{{ T.upId }}/">查看测试</a></td>
-                    <td><a href="/seeLog/{{ T.upId }}/">编译日志</a></td>
+                    <td><a href="/seeInfo/{{ T.upId }}/">测试</a></td>
+                    <td><a href="/seeLog/{{ T.upId }}/">编译</a></td>
                   {% else %}
                     {% if type == "ALL" %}
                       <td>代码</td>
-                      <td>查看测试</td>
-                      <td>编译日志</td>
+                      <td>测试</td>
+                      <td>编译</td>
                     {% else %}
                       <td><a href="/seeCode/{{ T.upId }}/">代码</a></td>
-                      <td><a href="/seeInfo/{{ T.upId }}/">查看测试</a></td>
-                      <td><a href="/seeLog/{{ T.upId }}/">编译日志</a></td>
+                      <td><a href="/seeInfo/{{ T.upId }}/">测试</a></td>
+                      <td><a href="/seeLog/{{ T.upId }}/">编译</a></td>
                     {% endif %}
                   {% endif %}
                 </tr>
