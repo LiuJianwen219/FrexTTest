@@ -52,6 +52,8 @@
                 <th scope="col">分数</th>
                 <th scope="col">状态</th>
                 <th scope="col">时长</th>
+                <th scope="col">lut</th>
+                <th scope="col">ff</th>
                 <th scope="col">代码</th>
                 <th scope="col">测试情况</th>
               </tr>
@@ -67,6 +69,8 @@
                   <td>{{ T.grade }}</td>
                   <td>{{ T.state }}</td>
                   <td>{{ T.cycle }}</td>
+                  <td>{{ T.luts }}</td>
+                  <td>{{ T.ffs }}</td>
                   {% if request.session.role == "admin" %}
                     <td><a href="/seeCode/{{ T.upId }}/">查看代码</a></td>
                     <td><a href="/seeInfo/{{ T.upId }}/">查看测试</a></td>

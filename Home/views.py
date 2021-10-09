@@ -297,7 +297,8 @@ def get_submission(request, u_uid):
             submissionList.append({"user": p.user.name, "title": p.test.title,
                                    "upTime": p.submit_time, "judge": p.state,
                                    "state": p.status, "grade": p.score,
-                                   "cycle": p.cycle, "upId": p.uid})
+                                   "cycle": p.cycle, "upId": p.uid,
+                                   "luts": p.lut_count, "ffs": p.ff_count})
 
     content = {
         'submissionList': submissionList,
@@ -313,7 +314,8 @@ def submission_all(request):
         submissionList.append({"user": p.user.name, "title": p.test.title,
                                "upTime": p.submit_time, "judge": p.state,
                                "state": p.status, "grade": p.score,
-                               "cycle": p.cycle, "upId": p.uid})
+                               "cycle": p.cycle, "upId": p.uid,
+                               "luts": p.lut_count, "ffs": p.ff_count})
 
     content = {
         'submissionList': submissionList,
