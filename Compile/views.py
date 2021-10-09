@@ -210,37 +210,37 @@ def compile_result(request):
         }
         # print(values)
         print(values["status"])
+        if values["status"] == "编译成功":
+            url = const.file_server_url + const.rpts_API + "/"
+            r = requests.get(url, params=values)
+            if r.status_code.__str__() != "200":
+                logger.error("Request RPT failed: " + r.headers.__str__())
+                return const.request_failed
 
-        url = const.file_server_url + const.rpts_API + "/"
-        r = requests.get(url, params=values)
-        if r.status_code.__str__() != "200":
-            logger.error("Request RPT failed: " + r.headers.__str__())
-            return const.request_failed
+            # data from compile files .rpt
+            index_luts = r.content.__str__().find("Slice LUTs")
+            strs_luts = r.content.__str__()[index_luts:r.content.__str__().find("\\n", index_luts)].split("|")
 
-        # data from compile files .rpt
-        index_luts = r.content.__str__().find("Slice LUTs")
-        strs_luts = r.content.__str__()[index_luts:r.content.__str__().find("\\n", index_luts)].split("|")
+            # data from compile files .rpt
+            index_ff = r.content.__str__().find("Slice Registers")
+            strs_ff = r.content.__str__()[index_ff:r.content.__str__().find("\\n", index_ff)].split("|")
 
-        # data from compile files .rpt
-        index_ff = r.content.__str__().find("Slice Registers")
-        strs_ff = r.content.__str__()[index_ff:r.content.__str__().find("\\n", index_ff)].split("|")
+            submit = SubmitList.objects.get(uid=values["submitId"])
+            submit.status = values["status"]
+            submit.message += values["message"] + "\n"
+            submit.compile_end_time = datetime.now()
+            submit.lut_count = int(strs_luts[1])
+            submit.ff_count = int(strs_ff[1])
+            global threadList
+            submit.comTime = threadList[values["threadIndex"]].get_time()
+            submit.save()
+            threadList[values["threadIndex"]].task_thread.set_over()
 
-        submit = SubmitList.objects.get(uid=values["submitId"])
-        submit.status = values["status"]
-        submit.message += values["message"] + "\n"
-        submit.compile_end_time = datetime.now()
-        submit.lut_count = int(strs_luts[1])
-        submit.ff_count = int(strs_ff[1])
-        global threadList
-        submit.comTime = threadList[values["threadIndex"]].get_time()
-        submit.save()
-        threadList[values["threadIndex"]].task_thread.set_over()
-
-        r = requests.post(url="http://frext-testing-svc:8030/judge/startJudge/", data=values)
-        if r.status_code.__str__() == "200":
-            logger.error("Request Result success: " + r.headers.__str__())
-        else:
-            logger.error("Request Result failed: " + r.headers.__str__())
+            r = requests.post(url="http://frext-testing-svc:8030/judge/startJudge/", data=values)
+            if r.status_code.__str__() == "200":
+                logger.error("Request Result success: " + r.headers.__str__())
+            else:
+                logger.error("Request Result failed: " + r.headers.__str__())
 
         data = {"state": "OK", "testState": "", "info": ""}
         return HttpResponse(json.dumps(data), content_type='application/json')
