@@ -56,8 +56,6 @@ spec:
       containers:
       - name: frext-testing-test
         image: wxwd14388/frext-testing:v1.0.0
-        command: ["/bin/sh"]
-        args: ["-c", "while true; do echo hello; sleep 4;done"]
         volumeMounts:
         - name: frext-job
           mountPath: /tmp/FrexT
