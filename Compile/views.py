@@ -209,7 +209,7 @@ def compile_result(request):
             "threadIndex":  request.POST.get("threadIndex", None),
         }
         # print(values)
-        print(values["status"])
+        # print(values["status"])
         global threadList
         if values["status"] == "编译成功":
             url = const.file_server_url + const.rpts_API + "/"
@@ -242,6 +242,8 @@ def compile_result(request):
             else:
                 logger.error("Request Result failed: " + r.headers.__str__())
         else:
+            logger.warning("compile status: " + values["status"])
+            logger.warning("compile message: " + values["message"])
             submit = SubmitList.objects.get(uid=values["submitId"])
             submit.status = values["status"]
             submit.message += values["message"] + "\n"
