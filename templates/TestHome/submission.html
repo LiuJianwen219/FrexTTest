@@ -56,6 +56,7 @@
                 <th scope="col">ff</th>
                 <th scope="col">代码</th>
                 <th scope="col">测试情况</th>
+                <th scope="col">日志</th>
               </tr>
             </thead>
             <tbody>
@@ -72,15 +73,18 @@
                   <td>{{ T.luts }}</td>
                   <td>{{ T.ffs }}</td>
                   {% if request.session.role == "admin" %}
-                    <td><a href="/seeCode/{{ T.upId }}/">查看代码</a></td>
+                    <td><a href="/seeCode/{{ T.upId }}/">代码</a></td>
                     <td><a href="/seeInfo/{{ T.upId }}/">查看测试</a></td>
+                    <td><a href="/seeLog/{{ T.upId }}/">编译日志</a></td>
                   {% else %}
                     {% if type == "ALL" %}
-                      <td>查看代码</td>
+                      <td>代码</td>
                       <td>查看测试</td>
+                      <td>编译日志</td>
                     {% else %}
-                      <td><a href="/seeCode/{{ T.upId }}/">查看代码</a></td>
+                      <td><a href="/seeCode/{{ T.upId }}/">代码</a></td>
                       <td><a href="/seeInfo/{{ T.upId }}/">查看测试</a></td>
+                      <td><a href="/seeLog/{{ T.upId }}/">编译日志</a></td>
                     {% endif %}
                   {% endif %}
                 </tr>

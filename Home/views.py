@@ -1,6 +1,7 @@
 import os, json, time
 # import struct
 # import numpy as np
+import requests
 from django.core.files import File
 from django.db.models import Sum, Count, Max
 from django.http import HttpResponse, JsonResponse, FileResponse
@@ -338,6 +339,27 @@ def see_result(request, upId):
     results = SubmitList.objects.filter(uid=upId)
     if len(results) > 0 and results[0].result:
         result = json.loads(results[0].result)
+    else:
+        result = "not ready please see later."
+    return HttpResponse(result, content_type="text/plain; charset=utf-8")
+
+
+def see_log(request, upId):
+    results = SubmitList.objects.filter(uid=upId)
+    if len(results) > 0:
+        url = const.file_server_url + const.logs_API + "/"
+        values = {
+            const.c_userId: str(results[0].user.uid),
+            const.c_testId: str(results[0].test.uid),
+            const.c_submitId: str(results[0].uid),
+            const.c_topic: results[0].test.topic,
+            const.c_topModuleName: results[0].test.top_module_name,
+        }
+        r = requests.get(url, params=values)
+        if r.status_code.__str__() != "200":
+            result = "not ready please see later."
+        else:
+            result = r.content
     else:
         result = "not ready please see later."
     return HttpResponse(result, content_type="text/plain; charset=utf-8")

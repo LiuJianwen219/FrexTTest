@@ -245,7 +245,7 @@ def compile_result(request):
             logger.warning("compile status: " + values["status"])
             logger.warning("compile message: " + values["message"])
             submit = SubmitList.objects.get(uid=values["submitId"])
-            submit.status = values["status"]
+            submit.status = "编译失败"
             submit.message += values["message"] + "\n"
             submit.compile_end_time = datetime.now()
             submit.comTime = threadList[values["threadIndex"]].get_time()
