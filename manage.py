@@ -10,7 +10,7 @@ rootPath = "/data/FrexT"
 log_path = os.path.join(rootPath, "FrexTTestServer_" + socket.gethostname() + ".log")
 
 # encoding='utf-8'
-logging.basicConfig(filename=log_path, level=logging.DEBUG,
+logging.basicConfig(filename=log_path, level=logging.WARNING,
                     filemode='w', format='%(levelname)s:%(asctime)s:%(message)s',
                     datefmt='%Y-%d-%m %H:%M:%S')
 logging.debug('Welcome to use FrexT Test System!')
