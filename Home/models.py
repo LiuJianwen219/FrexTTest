@@ -61,6 +61,8 @@ class SubmitList(models.Model):
     message = models.TextField()  # testing flow message, refresh/append in process
     result = models.TextField()
     cycle = models.IntegerField(default=-1)
+    lut_count = models.IntegerField(default=-1)
+    ff_count = models.IntegerField(default=-1)
     compile_start_time = models.DateTimeField(null=True)  # start compile time
     compile_end_time = models.DateTimeField(null=True)  # end compile time
     test_start_time = models.DateTimeField(null=True)  # start test time

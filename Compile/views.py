@@ -10,7 +10,7 @@ from threading import Timer
 from django.http import HttpResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.views.decorators.csrf import csrf_exempt
-
+from Constant import constants as const
 from Compile.compile_task import CompileTaskThread, send_task_to_rabbit_mq
 from Judge.judger import JudgeThread, JudgeHandleThread, JudgeTimeCounter
 from Compile.thread_handler import TaskHandlerThread, TimeCounter
@@ -208,21 +208,35 @@ def compile_result(request):
             "message":      request.POST.get("message", None),
             "threadIndex":  request.POST.get("threadIndex", None),
         }
-        print(values)
+        # print(values)
         print(values["status"])
+
+        url = const.file_server_url + const.rpts_API + "/"
+        r = requests.get(url, params=values)
+        if r.status_code.__str__() != "200":
+            logger.error("Request RPT failed: " + r.headers.__str__())
+            return const.request_failed
+
+        # data from compile files .rpt
+        index_luts = r.content.__str__().find("Slice LUTs")
+        strs_luts = r.content.__str__()[index_luts:r.content.__str__().find("\\n", index_luts)].split("|")
+
+        # data from compile files .rpt
+        index_ff = r.content.__str__().find("Slice Registers")
+        strs_ff = r.content.__str__()[index_ff:r.content.__str__().find("\\n", index_ff)].split("|")
+
         submit = SubmitList.objects.get(uid=values["submitId"])
         submit.status = values["status"]
         submit.message += values["message"] + "\n"
         submit.compile_end_time = datetime.now()
+        submit.lut_count = int(strs_luts[1])
+        submit.ff_count = int(strs_ff[1])
         global threadList
         submit.comTime = threadList[values["threadIndex"]].get_time()
         submit.save()
         threadList[values["threadIndex"]].task_thread.set_over()
 
-        # if values['status'] == "编译成功":
-        # 发起测试请求
         r = requests.post(url="http://frext-testing-svc:8030/judge/startJudge/", data=values)
-        # 更新数据库
         if r.status_code.__str__() == "200":
             logger.error("Request Result success: " + r.headers.__str__())
         else:
