@@ -46,6 +46,13 @@ spec:
     spec:
       serviceAccountName:
         frext
+      initContainers:
+      - name: volume-mount-hack
+        image: debian:stable-slim
+        command: ["sh", "-c", "chown -R 1001:1001 /nexus"]
+        volumeMounts:
+        - name: fs
+          mountPath: /nexus
       containers:
       - name: frext-testing-test
         image: wxwd14388/frext-testing-test:v0.0.9
