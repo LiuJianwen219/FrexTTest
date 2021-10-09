@@ -210,6 +210,7 @@ def compile_result(request):
         }
         # print(values)
         print(values["status"])
+        global threadList
         if values["status"] == "编译成功":
             url = const.file_server_url + const.rpts_API + "/"
             r = requests.get(url, params=values)
@@ -231,7 +232,6 @@ def compile_result(request):
             submit.compile_end_time = datetime.now()
             submit.lut_count = int(strs_luts[1])
             submit.ff_count = int(strs_ff[1])
-            global threadList
             submit.comTime = threadList[values["threadIndex"]].get_time()
             submit.save()
             threadList[values["threadIndex"]].task_thread.set_over()
@@ -246,7 +246,6 @@ def compile_result(request):
             submit.status = values["status"]
             submit.message += values["message"] + "\n"
             submit.compile_end_time = datetime.now()
-            global threadList
             submit.comTime = threadList[values["threadIndex"]].get_time()
             submit.save()
             threadList[values["threadIndex"]].task_thread.set_over()
