@@ -61,7 +61,7 @@ spec:
       volumes:
         - name: frext-job
           hostPath:
-            path: /root/FrexT/FrextTest
+            path: /root/FrexT
             type: Directory
         - name: fs
           hostPath:
