@@ -24,15 +24,15 @@ urlpatterns = [
 
     path('submissionAll/', views.submission_all),
     url(r'submission/(?P<u_uid>(.*))/$', views.get_submission),
-    url(r'seeCode/(?P<upId>(.+))/$', views.see_code),
-    url(r'seeInfo/(?P<upId>(.+))/$', views.see_info),
-    url(r'seeLog/(?P<upId>(.+))/$', views.see_log),
-    url(r'seeResult/(?P<upId>(.+))/$', views.see_result),
+    url(r'seeCode/(?P<upId>(.*))/$', views.see_code),
+    url(r'seeInfo/(?P<upId>(.*))/$', views.see_info),
+    url(r'seeLog/(?P<upId>(.*))/$', views.see_log),
+    url(r'seeResult/(?P<upId>(.*))/$', views.see_result),
 
     path('passRecAll/', views.pass_record_all),
-    url(r'passRec/(?P<u_uid>(.+))/$', views.pass_record),
-    url(r'seeCodePass/(?P<passId>(.+))/$', views.see_code_valid),
-    url(r'seeInfoPass/(?P<passId>(.+))/$', views.see_info_valid),
+    url(r'passRec/(?P<u_uid>(.*))/$', views.pass_record),
+    url(r'seeCodePass/(?P<passId>(.*))/$', views.see_code_valid),
+    url(r'seeInfoPass/(?P<passId>(.*))/$', views.see_info_valid),
 
     url(r'download/$', views.download),
 

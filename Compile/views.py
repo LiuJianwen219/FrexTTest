@@ -9,6 +9,7 @@ import requests
 from threading import Timer
 from django.http import HttpResponse
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from Constant import constants as const
 from Compile.compile_task import CompileTaskThread, send_task_to_rabbit_mq
@@ -34,6 +35,9 @@ countCom = 0
 
 
 def start_compile(request):
+    if not request.session['u_uid']:
+        return redirect('/login/')
+
     t_uid = request.POST.get("t_uid", None)
     s_uid = request.POST.get("s_uid", None)
     test = TestList.objects.get(uid=t_uid)

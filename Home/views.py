@@ -1,17 +1,12 @@
 import os, json, time
-# import struct
-# import numpy as np
 import requests
-from django.core.files import File
 from django.db.models import Sum, Count, Max
-from django.http import HttpResponse, JsonResponse, FileResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from Constant import constants as const
-from Login.models import User
 from Home import forms
 from Home.models import *
-from FrexTTest.settings import userFilesPath, compileErrPath, testFilesPath, compileZipPath, compileBitPath, \
-    Compile_MAX_Thread, Compile_MAX_Time, Judge_MAX_Time
+from FrexTTest.settings import userFilesPath, testFilesPath
 from FileHandler import file_request as fh
 
 import logging
@@ -60,6 +55,15 @@ def handle_uploaded_file(p, f):
 #             os.mkdir(new_path)
 #         np.savetxt(new_path + b_front + '.txt', m_array)  # 对文件进行重命名并保存到新的文件夹
 #         f.close()
+
+
+def response_ok():
+    return {"state": "OK"}
+
+
+def response_error(info):
+    return {"state": "ERROR", "info": info}
+
 
 def building(request):
     return render(request, "building.html")
@@ -215,6 +219,9 @@ def submit_code(request):
     # 1.将用户代码保存到 "/files/userFiles/" + request.session["user_name"] + "/" + fid
     # 2.将用户提交代码的记录保存下来
     # TODO: make this code more safe
+    if not request.session['u_uid']:
+        return redirect('/login/')
+
     if request.method == "POST":
         t_uid = request.POST.get("t_uid", None)
         code = request.POST.get("testUserCode", None)
@@ -328,46 +335,78 @@ def submission_all(request):
 
 
 def see_code(request, upId):
-    code = SubmitList.objects.get(uid=upId).code
-    return HttpResponse(code, content_type="text/plain; charset=utf-8")
+    if not upId:
+        return redirect('/login/')
+    try:
+        code = SubmitList.objects.get(uid=upId).code
+        return HttpResponse(code, content_type="text/plain; charset=utf-8")
+    except Exception as e:
+        logger.error(e)
+        return HttpResponse(json.dumps(response_error("please login first")),
+                            content_type="text/plain; charset=utf-8")
+
 
 
 def see_info(request, upId):
-    info = SubmitList.objects.get(uid=upId).message
-    return HttpResponse(info, content_type="text/plain; charset=utf-8")
+    if not upId:
+        return redirect('/login/')
+    try:
+        info = SubmitList.objects.get(uid=upId).message
+        return HttpResponse(info, content_type="text/plain; charset=utf-8")
+    except Exception as e:
+        logger.error(e)
+        return HttpResponse(json.dumps(response_error("please login first")),
+                            content_type="text/plain; charset=utf-8")
 
 
 def see_result(request, upId):
-    results = SubmitList.objects.filter(uid=upId)
-    if len(results) > 0 and results[0].result:
-        result = json.loads(results[0].result)
-    else:
-        result = "not ready please see later."
-    return HttpResponse(result, content_type="text/plain; charset=utf-8")
+    if not upId:
+        return redirect('/login/')
+    try:
+        results = SubmitList.objects.filter(uid=upId)
+        if len(results) > 0 and results[0].result:
+            result = json.loads(results[0].result)
+        else:
+            result = "not ready please see later."
+        return HttpResponse(result, content_type="text/plain; charset=utf-8")
+    except Exception as e:
+        logger.error(e)
+        return HttpResponse(json.dumps(response_error("please login first")),
+                            content_type="text/plain; charset=utf-8")
 
 
 def see_log(request, upId):
-    results = SubmitList.objects.filter(uid=upId)
-    if len(results) > 0:
-        url = const.file_server_url + const.logs_API + "/"
-        values = {
-            const.c_userId: str(results[0].user.uid),
-            const.c_testId: str(results[0].test.uid),
-            const.c_submitId: str(results[0].uid),
-            const.c_topic: results[0].test.topic,
-            const.c_topModuleName: results[0].test.top_module_name,
-        }
-        r = requests.get(url, params=values)
-        if r.status_code.__str__() != "200":
-            result = "not ready please see later."
+    if not upId:
+        return redirect('/login/')
+    try:
+        results = SubmitList.objects.filter(uid=upId)
+        if len(results) > 0:
+            url = const.file_server_url + const.logs_API + "/"
+            values = {
+                const.c_userId: str(results[0].user.uid),
+                const.c_testId: str(results[0].test.uid),
+                const.c_submitId: str(results[0].uid),
+                const.c_topic: results[0].test.topic,
+                const.c_topModuleName: results[0].test.top_module_name,
+            }
+            r = requests.get(url, params=values)
+            if r.status_code.__str__() != "200":
+                result = "not ready please see later."
+            else:
+                result = r.content
         else:
-            result = r.content
-    else:
-        result = "not ready please see later."
-    return HttpResponse(result, content_type="text/plain; charset=utf-8")
+            result = "not ready please see later."
+        return HttpResponse(result, content_type="text/plain; charset=utf-8")
+    except Exception as e:
+        logger.error(e)
+        return HttpResponse(json.dumps(response_error("please login first")),
+                            content_type="text/plain; charset=utf-8")
 
 
 def pass_record(request, u_uid):
+    if not u_uid:
+        return redirect('/login/')
+
     passRecList = []
     if u_uid:
         allPassList = ValidSubmitList.objects.filter(
@@ -400,13 +439,27 @@ def pass_record_all(request):
 
 
 def see_code_valid(request, passId):
-    code = ValidSubmitList.objects.get(uid=passId).submit.code
-    return HttpResponse(code, content_type="text/plain; charset=utf-8")
+    if not passId:
+        return redirect('/login/')
+    try:
+        code = ValidSubmitList.objects.get(uid=passId).submit.code
+        return HttpResponse(code, content_type="text/plain; charset=utf-8")
+    except Exception as e:
+        logger.error(e)
+        return HttpResponse(json.dumps(response_error("please login first")),
+                            content_type="text/plain; charset=utf-8")
 
 
 def see_info_valid(request, passId):
-    info = ValidSubmitList.objects.get(uid=passId).submit.message
-    return HttpResponse(info, content_type="text/plain; charset=utf-8")
+    if not passId:
+        return redirect('/login/')
+    try:
+        info = ValidSubmitList.objects.get(uid=passId).submit.message
+        return HttpResponse(info, content_type="text/plain; charset=utf-8")
+    except Exception as e:
+        logger.error(e)
+        return HttpResponse(json.dumps(response_error("please login first")),
+                            content_type="text/plain; charset=utf-8")
 
 
 def ranking(request):
