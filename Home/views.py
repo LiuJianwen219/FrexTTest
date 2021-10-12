@@ -290,7 +290,7 @@ def download(request):
 # check u_uid
 def get_submission(request, u_uid):
     if not u_uid:
-        return render(request, 'Login/register.html', locals())
+        return redirect('/login/')
 
     submissionList = []
     if u_uid:
