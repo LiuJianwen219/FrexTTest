@@ -254,8 +254,6 @@ def submit_code(request):
         test.submit_number += 1  # 题目提交数目 +1
         test.save()
 
-        request.session['t_uid'] = str(t_uid)
-        request.session['s_uid'] = str(row.uid)
         request.session['upTime'] = row.submit_time.__str__()
 
         state = "OK"
@@ -265,6 +263,7 @@ def submit_code(request):
             "testState": row.status,
             "recvCode": code,
             "info": row.message,
+            "s_uid": str(row.uid),
         }
         return HttpResponse(json.dumps(data), content_type='application/json')
 

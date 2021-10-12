@@ -23,7 +23,7 @@ urlpatterns = [
     path('addTestFile/', views.add_test_file),
 
     path('submissionAll/', views.submission_all),
-    url(r'submission/(?P<u_uid>(.+))/$', views.get_submission),
+    url(r'submission/(?P<u_uid>(.*))/$', views.get_submission),
     url(r'seeCode/(?P<upId>(.+))/$', views.see_code),
     url(r'seeInfo/(?P<upId>(.+))/$', views.see_info),
     url(r'seeLog/(?P<upId>(.+))/$', views.see_log),

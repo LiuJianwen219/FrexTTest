@@ -34,13 +34,16 @@ countCom = 0
 
 
 def start_compile(request):
+    t_uid = request.POST.get("t_uid", None)
+    s_uid = request.POST.get("s_uid", None)
+    test = TestList.objects.get(uid=t_uid)
     if request.method == "POST":
         content = {
             'userId': request.session['u_uid'],
-            'testId': request.session["t_uid"],
-            'submitId': request.session["s_uid"],
-            'topic': TestList.objects.get(uid=request.session["t_uid"]).topic,
-            'topModuleName': TestList.objects.get(uid=request.session["t_uid"]).top_module_name,
+            'testId': t_uid,
+            'submitId': s_uid,
+            'topic': test.topic,
+            'topModuleName': test.top_module_name,
         }
 
         # 只需要将编译任务丢到rabbitmq队列里面

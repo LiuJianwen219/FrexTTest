@@ -13,6 +13,7 @@
     <input type="hidden" id="t_uid" value="{{ t_uid }}"/>
     <input type="hidden" id="grade" value="{{ grade }}"/>
     <input type="hidden" id="timu" value="{{ testFile }}">
+    <input type="hidden" id="s_uid" value="???">
   </div>
   <div class="container">
   <div class="row" name="topNav">
@@ -229,6 +230,7 @@
             document.getElementById("testUserCodeUp").innerHTML = req.recvCode;
             if(req.state !== "ERROR") {
                 {#alert("上传成功");#}
+                document.getElementById('s_uid').innerText = req.s_uid;
                 startCompile();
             } else{
                 alert(req.info);
@@ -246,6 +248,8 @@
 
     function startCompile() {
       let data = new FormData();
+      data.append("t_uid", $("#t_uid").val());
+      data.append("s_uid", $("#s_uid").val());
       data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
       $.ajax({
           url: "/compile/startCompile/",
