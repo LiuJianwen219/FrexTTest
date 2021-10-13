@@ -112,7 +112,7 @@ class WebHandle:
             exit(-1)
         elif dict_["type"] == AUTH_RABBIT_SUCC:
             print("AUTH_RABBIT_SUCC")
-            data = {'type': ACT_SYNC}  # 对设备使用情况进行同步
+            data = {'type': ACT_SYNC, 'using': "TEST"}  # 对设备使用情况进行同步
             self.ws.send(json.dumps(data).encode("utf-8"))
 
         elif dict_["type"] == SYNC_DEVICE:
