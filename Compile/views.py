@@ -37,6 +37,8 @@ countCom = 0
 def start_compile(request):
     if not request.session['u_uid']:
         return redirect('/login/')
+    if not request.session['s_uid']:
+        return redirect('/login/')
 
     t_uid = request.POST.get("t_uid", None)
     s_uid = request.POST.get("s_uid", None)
