@@ -119,7 +119,7 @@ class WebHandle:
             print("SYNC_DEVICE")
             nReady = dict_['content']['nReady']
             if nReady > 0:
-                data = {'type': ACT_ACQUIRE, 'using': "test"}
+                data = {'type': ACT_ACQUIRE, 'using': "TEST"}
                 self.ws.send(json.dumps(data).encode("utf-8"))
             else:
                 time.sleep(3)  # 如果获取设备失败的话，那么停一秒钟重新获取
