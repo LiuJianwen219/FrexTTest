@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from Login import forms
-from Login.models import User
+from Login.models import User, LoginRecord
 
 
 # Create your views here.
@@ -26,9 +26,16 @@ def login(request):
             if user.password == password:
                 user.login_count += 1
                 user.save()
+
+                record = LoginRecord(user=user, login_index=user.login_count)
+                record.host = request.get_host()
+                record.port = request.get_port()
+                record.save()
+
                 request.session['is_login'] = True
                 request.session['u_uid'] = str(user.uid)
                 request.session['user_name'] = user.name
+                request.session['login_record_uid'] = str(record.uid)
                 request.session['role'] = user.role
                 return redirect('/')
             else:

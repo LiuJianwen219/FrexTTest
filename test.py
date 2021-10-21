@@ -14,7 +14,7 @@ lock = threading.Lock()
 t = 0
 a = [0,1,1,0,0]
 
-def printMY(str):
+def printMY(na):
     lock.acquire()
     n = 0
     for i in a:

@@ -5,8 +5,9 @@ import os
 import socket
 import sys
 
+from FrexTTest.settings import ROOT_PATH_PRODUCT, DEBUG, ROOT_PATH_DEVELOP
 
-rootPath = "/data/FrexT"
+rootPath = ROOT_PATH_DEVELOP if DEBUG else ROOT_PATH_PRODUCT
 log_path = os.path.join(rootPath, "FrexTTestServer_" + socket.gethostname() + ".log")
 
 # encoding='utf-8'

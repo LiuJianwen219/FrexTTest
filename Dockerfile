@@ -7,8 +7,8 @@ RUN ["pip", "install", "-r", "/tmp/requirements.txt"]
 COPY ./ /FrexT
 
 # create workspace
-#WORKDIR /FrexT/server
-WORKDIR /FrexT
+WORKDIR /FrexT/server
+#WORKDIR /FrexT
 
 # start
 ENTRYPOINT ["python", "RabbitMQTestServer.py"]

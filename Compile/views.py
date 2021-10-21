@@ -13,6 +13,7 @@ from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from Constant import constants as const
 from Compile.compile_task import CompileTaskThread, send_task_to_rabbit_mq
+from Home.views import access_check_record
 from Judge.judger import JudgeThread, JudgeHandleThread, JudgeTimeCounter
 from Compile.thread_handler import TaskHandlerThread, TimeCounter
 from FrexTTest.settings import userFilesPath, Compile_MAX_Thread, Compile_MAX_Time, Judge_MAX_Time
@@ -35,6 +36,9 @@ countCom = 0
 
 
 def start_compile(request):
+    if access_check_record(request, "compile", "用户开启编译"):
+        return redirect("/")
+
     if not request.session['u_uid']:
         return redirect('/login/')
 
@@ -76,6 +80,12 @@ def start_compile(request):
         global threadList
         global threadIndex
         if len(threadList) >= Compile_MAX_Thread:  # 表示当前没有编译线程资源
+            submit = SubmitList.objects.get(uid=s_uid)
+            submit.status = "暂时没有编译线程资源，请稍后重新提交"
+            submit.message += str(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: no compile resource.\n"
+            submit.compile_start_time = datetime.now()
+            submit.save()
             data = {"state": "OK", "testState": "暂时没有编译线程资源，请稍后重新提交 " + str(threadList), "info": "Waiting"}
             compile_checker.resume()
             return HttpResponse(json.dumps(data), content_type='application/json')

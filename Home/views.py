@@ -77,7 +77,42 @@ def test_introduce(request):
     return render(request, "TestHome/testIntroduce.html")
 
 
+def access_check_record(request, action, other_info):
+    if 'is_login' not in request.session:
+        return "not_login"
+    record = AccessRecord(user_id=request.session['u_uid'],
+                          login_record_id=request.session['login_record_uid'])
+    record.method = request.method
+    record.url_path = request.path_info
+    record.raw_uri = request.get_raw_uri()
+    record.body = json.dumps(request.POST)
+    record.action = action
+    record.other_info = other_info
+    record.save()
+    return None
+
+
+def write_code_record(request):
+    if 'is_login' not in request.session:
+        return "not_login"
+
+    if request.method == "POST":
+        record = AccessRecord(user_id=request.session['u_uid'],
+                              login_record_id=request.session['login_record_uid'])
+        record.method = request.method
+        record.url_path = request.path_info
+        record.raw_uri = request.get_raw_uri()
+        record.body = json.dumps(request.POST)
+        record.action = request.POST.get("action", "")
+        record.other_info = request.POST.get("otherInfo", "")
+        record.save()
+    return HttpResponse(json.dumps(response_ok()), content_type='application/json')
+
+
 def test_list(request):
+    if access_check_record(request, "see", "进入测试题目列表"):
+        return redirect("/")
+
     testLists = []
     allTests = TestList.objects.filter()
     for i in allTests:
@@ -92,6 +127,9 @@ def test_list(request):
 
 
 def test_page(request, t_uid):
+    if access_check_record(request, "see", "查看测试题目，读题"):
+        return redirect("/")
+
     test = TestList.objects.get(uid=t_uid)
 
     # file = open(testFilesPath + str(t_uid) + "/" +
@@ -113,6 +151,9 @@ def test_page(request, t_uid):
 
 
 def show_last(request):
+    if access_check_record(request, "see", "查看最近一次提交情况"):
+        return redirect("/")
+
     if request.method == "POST":
         t_uid = request.POST.get("t_uid", None)
         test = TestList.objects.get(uid=t_uid)
@@ -131,6 +172,9 @@ def show_last(request):
 
 
 def add_test(request):
+    if access_check_record(request, "add", "管理员添加题目"):
+        return redirect("/")
+
     if request.method == "POST":
         if request.session['is_login'] and request.session['role'] == 'admin':
             newTest_form = forms.NewTestForm(request.POST, request.FILES)
@@ -162,10 +206,11 @@ def add_test(request):
                         message = '提交成功！但是路径创建失败！'
                     else:
                         os.makedirs(os.path.join(testFilesPath, str(test.uid)))
-                        handle_uploaded_file(os.path.join(testFilesPath, str(test.uid), test.topic+".md"),
+                        handle_uploaded_file(os.path.join(testFilesPath, str(test.uid), test.topic + ".md"),
                                              request.FILES['file'])
                         test.file_path = os.path.join(testFilesPath, str(test.uid))
-                        with open(os.path.join(testFilesPath, str(test.uid), test.topic+".md"), "r", encoding='utf-8') as f:
+                        with open(os.path.join(testFilesPath, str(test.uid), test.topic + ".md"), "r",
+                                  encoding='utf-8') as f:
                             test.content = f.read()
                         test.save()
                         message = '提交成功！'
@@ -178,6 +223,9 @@ def add_test(request):
 
 
 def add_test_file(request):
+    if access_check_record(request, "add", "管理员添加题目"):
+        return redirect("/")
+
     if request.method == "POST":
         if request.session['is_login'] and request.session['role'] == 'admin':
             addTestFile_form = forms.AddTestFileForm(request.POST, request.FILES)
@@ -215,6 +263,8 @@ def add_test_file(request):
 
 
 def submit_code(request):
+    if access_check_record(request, "submit", "用户提交代码"):
+        return redirect("/")
     # 完成功能：
     # 1.将用户代码保存到 "/files/userFiles/" + request.session["user_name"] + "/" + fid
     # 2.将用户提交代码的记录保存下来
@@ -230,17 +280,17 @@ def submit_code(request):
         user = User.objects.get(uid=request.session["u_uid"])
 
         row = SubmitList(test=test, user=user)
-        row.save()      # generate uid
+        row.save()  # generate uid
 
         userDir = os.path.join(userFilesPath, "user", str(user.uid),
                                "testing", str(t_uid), str(row.uid))
         if not os.path.exists(userDir):  # 如果用户首次提交这个题目的代码，那么创建目录
             os.makedirs(userDir)
-        f = open(os.path.join(userDir, test.topic+".v"), 'wt')
+        f = open(os.path.join(userDir, test.topic + ".v"), 'wt')
         f.write(code)  # 保存用户代码
         f.close()
 
-        with open(os.path.join(userDir, test.topic+".v"), 'rt') as f:
+        with open(os.path.join(userDir, test.topic + ".v"), 'rt') as f:
             if fh.post_test({
                 const.c_userId: str(user.uid),
                 const.c_testId: str(test.uid),
@@ -250,12 +300,14 @@ def submit_code(request):
                 row.state = state_try
                 row.code = code
                 row.status = "代码提交成功"
-                row.message = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Success: code submit complete.\n"
+                row.message = str(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Success: code submit complete.\n"
                 row.save()
             else:
                 row.code = code
                 row.status = "代码提交失败"
-                row.message = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code submit complete.\n"
+                row.message = str(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code submit complete.\n"
                 row.save()
 
         test.submit_number += 1  # 题目提交数目 +1
@@ -279,6 +331,9 @@ def submit_code(request):
 
 
 def download(request):
+    if access_check_record(request, "download", "用户下载代码？"):
+        return redirect("/")
+
     userName = request.GET.get('userName')
     fid = request.GET.get('fid')
     count = request.GET.get('count')
@@ -296,6 +351,9 @@ def download(request):
 
 # check u_uid
 def get_submission(request, u_uid):
+    if access_check_record(request, "see", "用户查看提交记录 个人记录"):
+        return redirect("/")
+
     if not u_uid:
         return redirect('/login/')
 
@@ -318,6 +376,9 @@ def get_submission(request, u_uid):
 
 
 def submission_all(request):
+    if access_check_record(request, "see", "用户查看提交记录 所有记录"):
+        return redirect("/")
+
     submissionList = []
     allSubmissionList = SubmitList.objects.all().order_by('-submit_time')[:50]
     for p in allSubmissionList:
@@ -335,6 +396,9 @@ def submission_all(request):
 
 
 def see_code(request, upId):
+    if access_check_record(request, "see", "用户查看代码"):
+        return redirect("/")
+
     if not upId:
         return redirect('/login/')
     try:
@@ -346,8 +410,10 @@ def see_code(request, upId):
                             content_type="text/plain; charset=utf-8")
 
 
-
 def see_info(request, upId):
+    if access_check_record(request, "see", "用户查看测试日志"):
+        return redirect("/")
+
     if not upId:
         return redirect('/login/')
     try:
@@ -360,6 +426,9 @@ def see_info(request, upId):
 
 
 def see_result(request, upId):
+    if access_check_record(request, "see", "用户测试结果"):
+        return redirect("/")
+
     if not upId:
         return redirect('/login/')
     try:
@@ -376,6 +445,9 @@ def see_result(request, upId):
 
 
 def see_log(request, upId):
+    if access_check_record(request, "see", "用户编译信息"):
+        return redirect("/")
+
     if not upId:
         return redirect('/login/')
     try:
@@ -404,6 +476,9 @@ def see_log(request, upId):
 
 
 def pass_record(request, u_uid):
+    if access_check_record(request, "see", "用户查看通过记录 个人记录"):
+        return redirect("/")
+
     if not u_uid:
         return redirect('/login/')
 
@@ -424,6 +499,9 @@ def pass_record(request, u_uid):
 
 
 def pass_record_all(request):
+    if access_check_record(request, "see", "用户查看通过记录 所有记录"):
+        return redirect("/")
+
     passRecList = []
     allPassList = ValidSubmitList.objects.all().order_by("test")
     for p in allPassList:
@@ -439,6 +517,9 @@ def pass_record_all(request):
 
 
 def see_code_valid(request, passId):
+    if access_check_record(request, "see", "用户查看通过代码"):
+        return redirect("/")
+
     if not passId:
         return redirect('/login/')
     try:
@@ -451,6 +532,9 @@ def see_code_valid(request, passId):
 
 
 def see_info_valid(request, passId):
+    if access_check_record(request, "see", "用户查看通过代码测试信息"):
+        return redirect("/")
+
     if not passId:
         return redirect('/login/')
     try:
@@ -463,6 +547,9 @@ def see_info_valid(request, passId):
 
 
 def ranking(request):
+    if access_check_record(request, "see", "用户查看全站排名"):
+        return redirect("/")
+
     gradeLists = BestSubmitList.objects.all().values('user__name'). \
         annotate(Sum("submit__score"), Count("user__name"), Max("submit__submit_time")).order_by("user__name")
     passLists = ValidSubmitList.objects.all().values('user__name'). \

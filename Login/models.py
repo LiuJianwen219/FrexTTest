@@ -18,3 +18,13 @@ class User(models.Model):
 
     class Meta:
         ordering = ["logup_time"]
+
+
+class LoginRecord(models.Model):
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid1, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    host = models.CharField(max_length=64)
+    port = models.CharField(max_length=32)
+    login_index = models.PositiveIntegerField(default=0)
+    login_time = models.DateTimeField(auto_now_add=True)
+    logout_time = models.DateTimeField(auto_now=True)

@@ -9,6 +9,7 @@ urlpatterns = [
     path('testList/', views.test_list),
     url(r'testPage/(?P<t_uid>([0-9a-zA-Z_-]+))/$', views.test_page),
 
+    path('write_code_record/', views.write_code_record),
     path('upCode/', views.submit_code),
     # path('startCompile/', views.start_compile),
     path('showLast/', views.show_last),

@@ -152,6 +152,88 @@
 
 <script type="text/javascript">
 
+    let is_wrote = false;
+    let operation_count = 0;
+    let operation_key = 0;
+    let operation_v = 0;
+    let operation_threshold = 5;
+    let codeArea = document.getElementById('testUserCode');
+    codeArea.onkeypress = function (){
+        check_first_write("start to write, press key");
+        operation_key ++;
+        check_write_operation();
+    }
+
+    let ctrlDown = false,
+        ctrlKey = 17,
+        cmdKey = 91,
+        vKey = 86,
+        cKey = 67;
+    $(document).keydown(function(e) {
+        if (e.keyCode === ctrlKey || e.keyCode === cmdKey) ctrlDown = true;
+    }).keyup(function(e) {
+        if (e.keyCode === ctrlKey || e.keyCode === cmdKey) ctrlDown = false;
+    });
+    $(document).keydown(function(e) {
+        {#if (ctrlDown && (e.keyCode === vKey || e.keyCode === cKey)) return false;#}
+    });
+    // Document Ctrl + C/V
+    $(document).keydown(function(e) {
+        if (ctrlDown && (e.keyCode === cKey)){
+            console.log("Document catch Ctrl+C");
+        }
+        if (ctrlDown && (e.keyCode === vKey)){
+            check_first_write("start to write, ctrl V");
+            operation_v ++;
+            check_write_operation();
+        }
+    });
+
+    function check_first_write(action) {
+        if(codeArea.value === "" && is_wrote === false){
+            is_wrote = true;
+            console.log("write first")
+            write_code(action, "first character writing")
+        }
+    }
+
+    if (!String.prototype.format) {
+      String.prototype.format = function(...args) {
+        return this.replace(/(\{\d+\})/g, function(a) {
+          return args[+(a.substr(1, a.length - 2)) || 0];
+        });
+      };
+    }
+
+    function check_write_operation() {
+        operation_count ++;
+        if(operation_count > operation_threshold){
+            if(operation_threshold > 30) operation_threshold += 20;
+            else operation_threshold *= 2;
+            write_code('continue writing:  {0} key press, {1} ctrl V'.format(operation_key, operation_v), codeArea.value)
+        }
+    }
+
+    function write_code(action, otherInfo){
+        let data = new FormData();
+        data.append("action", action);
+        data.append("otherInfo", otherInfo);
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+            url: "/write_code_record/",
+            type: 'POST',
+            data: data,
+            timeout: 3600000,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (req) {
+
+            }
+        })
+    }
+
+
     document.getElementById('testContent').innerHTML = marked(document.getElementById('timu').value);
 
     if(document.getElementById('testType').innerHTML === "1")
