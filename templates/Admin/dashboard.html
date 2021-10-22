@@ -1,0 +1,112 @@
+{% extends 'base.html' %} {% load static %}
+{% block pageStyle %}
+    <script src="../../static/js/socket.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block title %}FrexT 首页{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row topNav">
+      <div class="col-sm-12 col-md-12 col-lg-12">
+        {% include 'topNav.html' with role=request.session.role %}
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <button onclick="remote.sync_device_detail()">设备状态</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <table class="table">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">设备序号</th>
+                        <th scope="col">同步时间</th>
+                        <th scope="col">状态</th>
+                        <th scope="col">客户</th>
+                        <th scope="col">占用时间</th>
+                        <th scope="col">标签</th>
+                        <th scope="col">主动同步</th>
+                    </tr>
+                </thead>
+                <tbody id="admin_device_board">
+{#                    {% for D in deviceDetail %}#}
+{#                    <tr class="device_data">#}
+{#                        <td>{{ D.id }}</td>#}
+{#                        <td>{{ D.syncTime }}</td>#}
+{#                        <td>{{ D.state }}</td>#}
+{#                        <td>{{ D.client }}</td>#}
+{#                        <td>{{ D.tag }}</td>#}
+{#                        <td>同步</td>#}
+{#                    </tr>#}
+{#                    {% endfor %}#}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+  </div>
+
+<script type="text/javascript">
+
+    function syncDeviceDetail(docChange) {
+        let data = new FormData();
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+            url: '/admin/sync_device_detail/',
+            type: 'POST',
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (req) {
+                if(req.state !== "ERROR") {
+                    for(let i=0; i<req.deviceDetail.length; ++i){
+                        let text =
+                            "<tr class=\"device_data\">" +
+                                "<td>"+ req.deviceDetail[i].id +"</td>" +
+                                "<td>"+ req.deviceDetail[i].syncTime +"</td>" +
+                                "<td>"+ req.deviceDetail[i].state +"</td>" +
+                                "<td>"+ req.deviceDetail[i].client +"</td>" +
+                                "<td>"+ req.deviceDetail[i].tag +"</td>" +
+                                "<td>"+ 同步 +"</td>" +
+                            "</tr>"
+                        $("#" + docChange).append(text);
+                    }
+                } else {
+                    alert(req.info);
+                }
+            }
+        })
+    }
+
+    start_web_socket()
+
+    let device_detail_table = "admin_device_board"
+    function syncDeviceDetail2(device_detail) {
+        let body = document.getElementById(device_detail_table);
+        let nodeList = body.childNodes;
+        for(let i=nodeList.length-1; i>=0; i--){
+            body.removeChild(nodeList[i]);
+        }
+        for(let i=0; i<device_detail.length; ++i){
+            let text =
+                "<tr class=\"device_data\">" +
+                    "<td>"+ device_detail[i].id +"</td>" +
+                    "<td>"+ device_detail[i].syncTime +"</td>" +
+                    "<td>"+ device_detail[i].state +"</td>" +
+                    "<td>"+ device_detail[i].state +"</td>" +
+                    "<td>"+ device_detail[i].state +"</td>" +
+                    "<td>"+ device_detail[i].tag +"</td>" +
+                    "<td>"+ "同步" +"</td>" +
+                "</tr>"
+            $("#" + device_detail_table).append(text);
+        }
+    }
+
+</script>
+{% endblock %}

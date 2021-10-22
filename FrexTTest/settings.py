@@ -148,7 +148,7 @@ userFilesPath = "files/userFiles/"
 compileZipPath = "/tmp/zip/"
 compileBitPath = "/tmp/bit/"
 compileErrPath = "/tmp/comErr/"
-compileUrl = "http://10.14.30.15:9000/compilefile/"
+# compileUrl = "http://10.14.30.15:9000/compilefile/"
 
 Rabbit_MQ_IP = "rabbit-mq"
 Rabbit_MQ_Port = 5672
