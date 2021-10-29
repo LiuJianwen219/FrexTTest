@@ -307,7 +307,7 @@ def submit_save_code(request):
                     time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code save complete.\n"
                 row.save()
         data = response_ok()
-        data['save_time'] = row.submit_time
+        data['save_time'] = str(row.submit_time)
         return HttpResponse(json.dumps(data), content_type='application/json')
 
     return HttpResponse(json.dumps(response_error("非法访问")), content_type='application/json')
@@ -329,7 +329,6 @@ def get_code(request):
             return HttpResponse(json.dumps(response_error("没有代码记录")), content_type='application/json')
         data = response_ok()
         data['code'] = submit[0].code
-        print(submit[0].code)
         return HttpResponse(json.dumps(data), content_type='application/json')
 
     return HttpResponse(json.dumps(response_error("非法访问")), content_type='application/json')

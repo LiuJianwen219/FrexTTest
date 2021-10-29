@@ -400,7 +400,7 @@ endmodule
         contentType: false,
         success: function (req) {
             if(req.state !== "ERROR") {
-                document.getElementById('testUserCode').innerHTML = req.code
+                document.getElementById('testUserCode').value = req.code
             } else{
                 alert(req.info);
             }
