@@ -579,8 +579,10 @@ endmodule
             contentType: false,
             success: function (req) {
                 if(req.state !== "ERROR") {
+                    url = req.sim_result_html.replace("http://fpga-resim-svc:5000/", "http://47.96.95.218:30500/")
+                    console.log(url)
                     document.getElementById("sim_result_state").innerHTML =
-                        "<a href='" + req.sim_result_html + "' target='_blank'>查看仿真结果</a>"
+                        "<a href='" + url + "' target='_blank'>查看仿真结果</a>"
                 } else{
                     alert(req.info);
                 }
