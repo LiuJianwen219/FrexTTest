@@ -172,7 +172,7 @@ Judge_MAX_Thread = 4  # 最多的评测线程
 Compile_Server_Url = "http://frext-compile-svc:8012/"
 Compile_Server_Api = "compile/"
 
-Simulate_Server_Url = "http://47.95.96.218:30500/"
+Simulate_Server_Url = "http://fpga-resim-svc:30500/"
 Simulate_Server_Api = "sim/get_all"
 
 # Judge_Server_Url = "http://192.168.80.150:31462/"
