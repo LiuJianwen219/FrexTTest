@@ -29,5 +29,6 @@ urlpatterns = [
     path('compile/', include('Compile.urls')),
     path('judge/', include('Judge.urls')),
     path('admin/', include('Admin.urls')),
+    path('simulate/', include('Simulate.urls')),
     path('', include('Home.urls')),
 ]

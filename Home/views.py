@@ -262,6 +262,79 @@ def add_test_file(request):
     return render(request, "TestHome/addTestFile.html", locals())
 
 
+def submit_save_code(request):
+    if access_check_record(request, "submit", "用户保存代码"):
+        return redirect("/")
+
+    if not request.session['u_uid']:
+        return redirect('/login/')
+
+    if request.method == "POST":
+        t_uid = request.POST.get("t_uid", None)
+        code = request.POST.get("testUserCode", None)
+
+        test = TestList.objects.get(uid=t_uid)
+        user = User.objects.get(uid=request.session["u_uid"])
+
+        row = SubmitList(test=test, user=user)
+        row.save()  # generate uid
+
+        userDir = os.path.join(userFilesPath, "user", str(user.uid),
+                               "testing", str(t_uid), str(row.uid))
+        if not os.path.exists(userDir):  # 如果用户首次提交这个题目的代码，那么创建目录
+            os.makedirs(userDir)
+        f = open(os.path.join(userDir, test.topic + ".v"), 'wt')
+        f.write(code)  # 保存用户代码
+        f.close()
+
+        with open(os.path.join(userDir, test.topic + ".v"), 'rt') as f:
+            if fh.post_test({
+                const.c_userId: str(user.uid),
+                const.c_testId: str(test.uid),
+                const.c_submitId: str(row.uid),
+                const.c_topic: test.topic,
+            }, f) == const.request_success:
+                row.state = state_save
+                row.code = code
+                row.status = "代码保存成功"
+                row.message = str(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Success: code save complete.\n"
+                row.save()
+            else:
+                row.code = code
+                row.status = "代码保存失败"
+                row.message = str(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code save complete.\n"
+                row.save()
+        data = response_ok()
+        data['save_time'] = row.submit_time
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+    return HttpResponse(json.dumps(response_error("非法访问")), content_type='application/json')
+
+
+def get_code(request):
+    if access_check_record(request, "submit", "获取最新的代码"):
+        return redirect("/")
+
+    if not request.session['u_uid']:
+        return redirect('/login/')
+
+    if request.method == "POST":
+        t_uid = request.POST.get("t_uid", None)
+        test = TestList.objects.get(uid=t_uid)
+        user = User.objects.get(uid=request.session["u_uid"])
+        submit = SubmitList.objects.filter(test=test, user=user).order_by('-submit_time')
+        if len(submit) == 0:
+            return HttpResponse(json.dumps(response_error("没有代码记录")), content_type='application/json')
+        data = response_ok()
+        data['code'] = submit[0].code
+        print(submit[0].code)
+        return HttpResponse(json.dumps(data), content_type='application/json')
+
+    return HttpResponse(json.dumps(response_error("非法访问")), content_type='application/json')
+
+
 def submit_code(request):
     if access_check_record(request, "submit", "用户提交代码"):
         return redirect("/")

@@ -64,13 +64,23 @@
             <div class="col-sm-10 col-md-10 col-lg-10">
           {% csrf_token %}
           <textarea id="testUserCode" style="resize:none; height: 500px; width: 100%;" placeholder="v代码"></textarea>
+                <p id="code_state"></p>
+          <button onclick="saveCode()">
+            保存
+          </button>
+          <button onclick="getCode()">
+            获取最近保存/提交代码
+          </button>
           <button onclick="upCode()" href="#" data-toggle="modal" data-target="#testResultBoard">
             提交
           </button>
           <button href="#" data-toggle="modal" data-target="#testResultBoard" onclick="showLast()">
             显示
           </button>
-{#          <button id="close_websocket">关闭</button>#}
+          <button href="#" data-toggle="modal" data-target="#testSimulationBoard" onclick="showLastSim()">
+            仿真
+          </button>
+
           <div class="modal fade bd-example-modal-lg" id="testResultBoard" tabindex="-1" role="dialog"
                aria-labelledby="myUpLoadFile" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -131,6 +141,63 @@
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade bd-example-modal-lg" id="testSimulationBoard" tabindex="-1" role="dialog"
+               aria-labelledby="simulationBoard" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" id="myUpLoadFile">仿真</h4>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-sm-2 col-md-2 col-lg-2">仿真代码</div>
+                    <div class="col-sm-10 col-md-10 col-lg-10">
+                      <textarea id="testUserSimCode" style="resize:none; height: 500px; width: 100%;" placeholder="参考代码
+module mod8_test;
+    reg clk;
+    reg rst;
+    wire [2:0] mod8;
+    mod8 m1(clk, rst, mod8);
+    always begin
+        clk<=1'b0;#2;
+        clk<=1'b1;#2;
+    end
+    initial begin
+        rst<=1'b1;#4;
+        rst<=1'b0;#50;
+        $stop;
+    end
+endmodule
+                      "></textarea>
+                    </div>
+                  </div>
+                    <div class="row">
+                        <p>状态：<span id="sim_code_save_state">未保存</span></p>
+                    </div>
+                    <div class="row">
+                        <p>结果：<span id="sim_result_state">无</span></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" name="update_id" class="btn btn-primary"
+                            onclick="simulate_code_get()">
+                      获取上次保存/运行测试代码
+                    </button>
+                    <button type="submit" name="update_id" class="btn btn-primary"
+                            onclick="simulate_code_save()">
+                      保存
+                    </button>
+                    <button type="submit" name="update_id" class="btn btn-primary"
+                            onclick="simulate_code()">
+                      仿真
+                    </button>
                 </div>
               </div>
             </div>
@@ -289,6 +356,65 @@
 
     let s_uid = "";
 
+    function saveCode() {
+        let data = new FormData();
+        data.append("testUserCode", $("#testUserCode").val());
+        data.append("t_uid", $("#t_uid").val());
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+        url: "/upCodeSave/",
+        type: 'POST',
+        data: data,
+        timeout:3600000,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (req) {
+            if(req.state !== "ERROR") {
+                document.getElementById('code_state').innerHTML = "保存成功：" + req.save_time
+            } else{
+                alert(req.info);
+            }
+        },
+          error: function (jqXHR, textStatus, errorThrown) {
+            if (textStatus === "timeout") {
+              alert("Call has timed out"); //Handle the timeout
+            } else {
+              alert("Another error was returned"); //Handle other error type
+            }
+          }
+      })
+    }
+
+    function getCode() {
+        let data = new FormData();
+        data.append("t_uid", $("#t_uid").val());
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+        url: "/getCode/",
+        type: 'POST',
+        data: data,
+        timeout:3600000,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (req) {
+            if(req.state !== "ERROR") {
+                document.getElementById('testUserCode').innerHTML = req.code
+            } else{
+                alert(req.info);
+            }
+        },
+          error: function (jqXHR, textStatus, errorThrown) {
+            if (textStatus === "timeout") {
+              alert("Call has timed out"); //Handle the timeout
+            } else {
+              alert("Another error was returned"); //Handle other error type
+            }
+          }
+      })
+    }
+    
     function upCode() {
       let data = new FormData();
       data.append("testUserCode", $("#testUserCode").val());
@@ -376,6 +502,101 @@
       })
     }
 
+    function simulate_code_get() {
+        let data = new FormData();
+        data.append("t_uid", $("#t_uid").val());
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+            url: "/simulate/simulate_code/",
+            type: 'POST',
+            data: data,
+            timeout:3600000,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (req) {
+                if(req.state !== "ERROR") {
+                    document.getElementById("testUserSimCode").innerHTML = req.sim_code
+                } else{
+                    alert(req.info);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (textStatus === "timeout") {
+                    alert("Call has timed out"); //Handle the timeout
+                } else {
+                    alert("Another error was returned"); //Handle other error type
+                }
+            }
+        })
+    }
+    
+    function simulate_code_save() {
+        let data = new FormData();
+        data.append("t_uid", $("#t_uid").val());
+        data.append("testUserCode", $("#testUserCode").val());
+        data.append("testUserSimCode", $("#testUserSimCode").val());
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+            url: "/simulate/simulations/",
+            type: 'POST',
+            data: data,
+            timeout:3600000,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (req) {
+                if(req.state !== "ERROR") {
+                    document.getElementById("sim_code_save_state").innerText = "保存成功"
+                } else{
+                    alert(req.info);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (textStatus === "timeout") {
+                    alert("Call has timed out"); //Handle the timeout
+                } else {
+                    alert("Another error was returned"); //Handle other error type
+                }
+            }
+        })
+    }
+    
+    function simulate_code() {
+        let data = new FormData();
+        data.append("t_uid", $("#t_uid").val());
+        data.append("sim_type", "simulate");
+        data.append("testUserCode", $("#testUserCode").val());
+        data.append("testUserSimCode", $("#testUserSimCode").val());
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+            url: "/simulate/simulations/",
+            type: 'POST',
+            data: data,
+            timeout:3600000,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (req) {
+                if(req.state !== "ERROR") {
+                    document.getElementById("sim_result_state").innerHTML =
+                        "<a href='" + req.sim_result_html + "' target='_blank'>查看仿真结果</a>"
+                } else{
+                    alert(req.info);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (textStatus === "timeout") {
+                    alert("Call has timed out"); //Handle the timeout
+                } else {
+                    alert("Another error was returned"); //Handle other error type
+                }
+            }
+        })
+    }
+    
+    
+    
     function detectCompile(threadID, time) {
       let data = new FormData();
       data.append("threadID", threadID)

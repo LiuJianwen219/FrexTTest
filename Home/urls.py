@@ -11,6 +11,8 @@ urlpatterns = [
 
     path('write_code_record/', views.write_code_record),
     path('upCode/', views.submit_code),
+    path('getCode/', views.get_code),
+    path('upCodeSave/', views.submit_save_code),
     # path('startCompile/', views.start_compile),
     path('showLast/', views.show_last),
     # path('detectCompile/', views.detectCompile),

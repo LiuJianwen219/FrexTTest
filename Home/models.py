@@ -40,12 +40,14 @@ class TestFile(models.Model):
 state_see = "see"
 state_pass = "pass"
 state_try = "try"
+state_save = "save"
 state_unknown = "unknown"
 state_enum = [
     (state_see, state_see),
     (state_pass, state_pass),
     (state_try, state_try),
-    (state_unknown, state_unknown)
+    (state_unknown, state_unknown),
+    (state_save, state_save),
 ]
 
 

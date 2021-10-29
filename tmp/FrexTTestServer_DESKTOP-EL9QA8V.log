@@ -1,1 +1,69 @@
-INFO:2021-22-10 11:38:27:Watching for file changes with StatReloader
+INFO:2021-29-10 14:48:15:Watching for file changes with StatReloader
+ERROR:2021-29-10 14:48:29:Internal Server Error: /upCode/
+Traceback (most recent call last):
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\connection.py", line 142, in _new_conn
+    (self.host, self.port), self.timeout, **extra_kw)
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\util\connection.py", line 75, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+  File "C:\Users\ljw\AppData\Local\Programs\Python\Python37\lib\socket.py", line 752, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+socket.gaierror: [Errno 11001] getaddrinfo failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\connectionpool.py", line 595, in urlopen
+    chunked=chunked)
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\connectionpool.py", line 363, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "C:\Users\ljw\AppData\Local\Programs\Python\Python37\lib\http\client.py", line 1277, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "C:\Users\ljw\AppData\Local\Programs\Python\Python37\lib\http\client.py", line 1323, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "C:\Users\ljw\AppData\Local\Programs\Python\Python37\lib\http\client.py", line 1272, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\ljw\AppData\Local\Programs\Python\Python37\lib\http\client.py", line 1032, in _send_output
+    self.send(msg)
+  File "C:\Users\ljw\AppData\Local\Programs\Python\Python37\lib\http\client.py", line 972, in send
+    self.connect()
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\connection.py", line 167, in connect
+    conn = self._new_conn()
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\connection.py", line 151, in _new_conn
+    self, "Failed to establish a new connection: %s" % e)
+requests.packages.urllib3.exceptions.NewConnectionError: <requests.packages.urllib3.connection.HTTPConnection object at 0x0000020CA31E7688>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\adapters.py", line 423, in send
+    timeout=timeout
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\connectionpool.py", line 640, in urlopen
+    _stacktrace=sys.exc_info()[2])
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\packages\urllib3\util\retry.py", line 287, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+requests.packages.urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='frext-file-svc', port=8010): Max retries exceeded with url: /tests/ (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x0000020CA31E7688>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "G:\0Web\djangoVenv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "G:\0Web\djangoVenv\lib\site-packages\django\core\handlers\base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "G:\0Web\djangoVenv\lib\site-packages\django\core\handlers\base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "G:\0Web\FrexTTest\Home\views.py", line 372, in submit_code
+    }, f) == const.request_success:
+  File "G:\0Web\FrexTTest\FileHandler\file_request.py", line 38, in post_test
+    r = requests.post(url, files=files, data=values)
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\api.py", line 110, in post
+    return request('post', url, data=data, json=json, **kwargs)
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\api.py", line 56, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\sessions.py", line 475, in request
+    resp = self.send(prep, **send_kwargs)
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\sessions.py", line 596, in send
+    r = adapter.send(request, **kwargs)
+  File "G:\0Web\djangoVenv\lib\site-packages\requests\adapters.py", line 487, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='frext-file-svc', port=8010): Max retries exceeded with url: /tests/ (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x0000020CA31E7688>: Failed to establish a new connection: [Errno 11001] getaddrinfo failed'))
