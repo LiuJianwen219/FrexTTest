@@ -28,6 +28,7 @@ class TestList(models.Model):
     company = models.CharField(max_length=128, default="ARClab")
     visibility = models.BooleanField(default=False)
     create_time = models.DateTimeField(auto_now_add=True)
+    index = models.PositiveIntegerField(default=10000)
 
 
 class TestFile(models.Model):

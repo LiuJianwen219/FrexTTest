@@ -13,6 +13,15 @@
       </div>
     </div>
 
+    <div>
+        {% csrf_token %}
+        <p>当前编译限制：{{ maxCompile }}</p>
+        <p>当前正在编译：{{ compiling }}</p>
+        <button onclick="addThreadResource()">增加编译进程限制</button>
+    </div>
+
+      <hr>
+
     <div class="container">
         <div class="row">
             <button onclick="remote.sync_device_detail()">设备状态</button>
@@ -53,11 +62,11 @@
 
 <script type="text/javascript">
 
-    function syncDeviceDetail(docChange) {
+    function addThreadResource(){
         let data = new FormData();
         data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
         $.ajax({
-            url: '/admin/sync_device_detail/',
+            url: '/admin/add_resource/',
             type: 'POST',
             data: data,
             cache: false,
@@ -65,18 +74,7 @@
             contentType: false,
             success: function (req) {
                 if(req.state !== "ERROR") {
-                    for(let i=0; i<req.deviceDetail.length; ++i){
-                        let text =
-                            "<tr class=\"device_data\">" +
-                                "<td>"+ req.deviceDetail[i].id +"</td>" +
-                                "<td>"+ req.deviceDetail[i].syncTime +"</td>" +
-                                "<td>"+ req.deviceDetail[i].state +"</td>" +
-                                "<td>"+ req.deviceDetail[i].client +"</td>" +
-                                "<td>"+ req.deviceDetail[i].tag +"</td>" +
-                                "<td>"+ 同步 +"</td>" +
-                            "</tr>"
-                        $("#" + docChange).append(text);
-                    }
+
                 } else {
                     alert(req.info);
                 }

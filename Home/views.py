@@ -114,7 +114,7 @@ def test_list(request):
         return redirect("/")
 
     testLists = []
-    allTests = TestList.objects.filter()
+    allTests = TestList.objects.filter().order_by("index")
     for i in allTests:
         testLists.append({"title": i.title, "type": i.type,
                           "grade": i.grade, "passNum": i.pass_number,

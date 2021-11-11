@@ -35,6 +35,24 @@ countCom = 0
 # countJud = 0
 
 
+compile_max_thread_local = Compile_MAX_Thread
+
+
+def get_max_compile_thread():
+    global compile_max_thread_local
+    return compile_max_thread_local
+
+
+def get_compiling_thread():
+    global threadList
+    return len(threadList)
+
+
+def add_compile_thread_resource():
+    global compile_max_thread_local
+    compile_max_thread_local = compile_max_thread_local + 1
+
+
 def start_compile(request):
     if access_check_record(request, "compile", "用户开启编译"):
         return redirect("/")
@@ -79,7 +97,8 @@ def start_compile(request):
 
         global threadList
         global threadIndex
-        if len(threadList) >= Compile_MAX_Thread:  # 表示当前没有编译线程资源
+        global compile_max_thread_local
+        if len(threadList) >= compile_max_thread_local:  # 表示当前没有编译线程资源
             submit = SubmitList.objects.get(uid=s_uid)
             submit.status = "暂时没有编译线程资源，请稍后重新提交"
             submit.message += str(
@@ -171,7 +190,8 @@ def detect_compile():
             print("compile timeout: " + json.dumps(threadList[key].get_contents()))
             submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
             submit.status = "编译超时，请稍后重新提交"
-            submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code compile task time out.\n"
+            submit.message += str(
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code compile task time out.\n"
             submit.save()
             needToDel.append(threadList[key].get_content("threadIndex"))
         if threadList[key].get_task_result() is not None:  # 表示编译任务提交到了RabbitMQ
@@ -186,7 +206,8 @@ def detect_compile():
                 if not threadList[key].task_thread.is_sub_over():
                     submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                     submit.status = "提交编译任务成功"
-                    submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Success: code compile task submit complete.\n"
+                    submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S",
+                                                        time.localtime())) + " Success: code compile task submit complete.\n"
                     submit.compile_start_time = datetime.now()
                     submit.save()
                     threadList[key].task_thread.set_sub_over()
@@ -195,17 +216,19 @@ def detect_compile():
                 else:
                     submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                     submit.status = "提交编译任务成功，编译{0}秒".format(threadList[key].get_time())
-                    submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Running: compile {0} seconds\n".format(threadList[key].get_time())
+                    submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S",
+                                                        time.localtime())) + " Running: compile {0} seconds\n".format(
+                        threadList[key].get_time())
                     submit.save()
             else:
                 submit = SubmitList.objects.get(uid=threadList[key].get_content("submitId"))
                 submit.status = "提交编译任务失败，请重新提交"
-                submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code compile task submit error.\n"
+                submit.message += str(
+                    time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Failed: code compile task submit error.\n"
                 submit.compile_end_time = datetime.now()
                 submit.save()
                 needToDel.append(key)
         threadList[key].time_add()
-
 
     for k in needToDel:
         print("compile thread delete: " + json.dumps(threadList[k].get_contents()))
@@ -216,14 +239,14 @@ def detect_compile():
 def compile_result(request):
     if request.method == "POST":
         values = {
-            "userId":       request.POST.get("userId", None),
-            "testId":       request.POST.get("testId", None),
-            "submitId":     request.POST.get("submitId", None),
-            "topic":        request.POST.get("topic", None),
-            "state":        request.POST.get("state", None),
-            "status":       request.POST.get("status", None),
-            "message":      request.POST.get("message", None),
-            "threadIndex":  request.POST.get("threadIndex", None),
+            "userId": request.POST.get("userId", None),
+            "testId": request.POST.get("testId", None),
+            "submitId": request.POST.get("submitId", None),
+            "topic": request.POST.get("topic", None),
+            "state": request.POST.get("state", None),
+            "status": request.POST.get("status", None),
+            "message": request.POST.get("message", None),
+            "threadIndex": request.POST.get("threadIndex", None),
         }
         # print(values)
         # print(values["status"])
