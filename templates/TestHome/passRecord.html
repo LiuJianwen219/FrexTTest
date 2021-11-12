@@ -39,7 +39,7 @@
             <h2>FrexT测试系统：个人通过最佳记录</h2>
           {% endif %}
           <h3>公告：本系统处于测试阶段，如有问题欢迎咨询</h3>
-          <h4>钉钉：刘剑文</h4>
+{#          <h4>钉钉：刘剑文</h4>#}
           <h4>邮箱：jianwen_liu219@163.com</h4>
 
           <table class="table">
@@ -49,9 +49,11 @@
                 <th scope="col">用户</th>
                 <th scope="col">标题</th>
                 <th scope="col">分数</th>
+                  {% if request.session.role != "student_0" %}
                 <th scope="col">时长</th>
                 <th scope="col">代码</th>
                 <th scope="col">测试情况</th>
+                  {% endif %}
               </tr>
             </thead>
             <tbody>
@@ -62,6 +64,7 @@
                   <td>{{ T.user }}</td>
                   <td>{{ T.title }}</td>
                   <td>{{ T.grade }}</td>
+                    {% if request.session.role != "student_0" %}
                   <td>{{ T.cycle }}</td>
                   {% if request.session.role == "admin" %}
                     <td><a href="/seeCodePass/{{ T.passId }}/">查看代码</a></td>
@@ -75,6 +78,7 @@
                       <td><a href="/seeInfoPass/{{ T.passId }}/">查看测试</a></td>
                     {% endif %}
                   {% endif %}
+                    {% endif %}
                 </tr>
               {% endfor %}
             </tbody>

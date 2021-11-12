@@ -32,24 +32,24 @@
             <li class="navItem"><a href="/suggestion">建议</a></li>
             <li class="navItem"><a href="/admin">管理</a></li>
             <li class="navItem"><a href="/addTest">添加测试</a></li>
+            <li class="dropdown navItem">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  其他 <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="/submissionAll">全站提交记录</a></li>
+                  <li><a href="/passRecAll">全站通过情况</a></li>
+                  <li><a href="/ranking">全站排名</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="/enterExotic">进入实验平台</a></li>
+                </ul>
+            </li>
           {% else %}
             <li class="navItem"><a href="/guide">说明</a></li>
             <li class="navItem"><a href="/resource">资源</a></li>
             <li class="navItem"><a href="/testList">测试</a></li>
             <li class="navItem"><a href="/suggestion">意见</a></li>
           {% endif %}
-          <li class="dropdown navItem">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-              其他 <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="/submissionAll">全站提交记录</a></li>
-              <li><a href="/passRecAll">全站通过情况</a></li>
-              <li><a href="/ranking">全站排名</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="/enterExotic">进入实验平台</a></li>
-            </ul>
-          </li>
         </ul>
       {% endif %}
       <ul class="nav navbar-nav navbar-right">

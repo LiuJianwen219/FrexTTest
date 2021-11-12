@@ -23,8 +23,8 @@
         <div class="col-sm-2 col-md-2 col-lg-2">
           <ul class="nav nav-pill nav-stacked">
             <li><a href="/testList">题目列表1</a></li>
-            <li><a href="/submission/{{ request.session.user_name }}/">个人提交</a></li>
-            <li><a href="/passRec/{{ request.session.user_name }}/">个人通过</a></li>
+            <li><a href="/submission/{{ request.session.u_uid }}/">个人提交</a></li>
+            <li><a href="/passRec/{{ request.session.u_uid }}/">个人通过</a></li>
             <li><a href="/suggestion/">意见何建议</a></li>
             {% if request.session.role == "admin" %}
               <li><a href="/submissionAll">全站提交记录</a></li>
@@ -36,7 +36,7 @@
         <div class="col-sm-10 col-md-10 col-lg-10">
           <h2>FrexT测试系统：建议列表</h2>
           <h3>公告：本系统处于测试阶段，如有问题欢迎咨询</h3>
-          <h4>钉钉：刘剑文</h4>
+{#          <h4>钉钉：刘剑文</h4>#}
           <h4>邮箱：jianwen_liu219@163.com</h4>
 
           <button><a href="addSuggestion">提建议</a></button>

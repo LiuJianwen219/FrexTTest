@@ -38,4 +38,4 @@ spec:
     spec:
       containers:
       - name: frext-test-rabbit
-        image: wxwd14388/frext-test-rabbitmq:v0.1.2
+        image: wxwd14388/frext-test-rabbitmq:v0.1.3

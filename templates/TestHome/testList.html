@@ -35,7 +35,7 @@
         <div class="col-sm-10 col-md-10 col-lg-10">
           <h2>FrexT测试系统：题目列表</h2>
           <h3>公告：本系统处于测试阶段，如有问题欢迎咨询</h3>
-          <h4>钉钉：刘剑文</h4>
+{#          <h4>钉钉：刘剑文</h4>#}
           <h4>邮箱：jianwen_liu219@163.com</h4>
 
           <table class="table">
@@ -45,9 +45,11 @@
                 <th scope="col">标题</th>
                 <th scope="col">类型</th>
                 <th scope="col">分数</th>
+                  {% if request.session.role != "student_0" %}
                 <th scope="col">通过数</th>
                 <th scope="col">提交数</th>
                 <th scope="col">通过率</th>
+                  {% endif %}
               </tr>
             </thead>
             <tbody>
@@ -58,9 +60,11 @@
                   <td><a href="/testPage/{{ T.id }}/">{{ T.title }}</a></td>
                   <td>{{ T.type }}</td>
                   <td>{{ T.grade }}</td>
+                    {% if request.session.role != "student_0" %}
                   <td>{{ T.passNum }}</td>
                   <td>{{ T.upNum }}</td>
                   <td>0.0</td>
+                    {% endif %}
                 </tr>
                 {% endif %}
               {% endfor %}

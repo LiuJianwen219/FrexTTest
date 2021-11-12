@@ -3,7 +3,16 @@ import uuid
 
 # Create your models here.
 
-role_enum = [('student', 'student'), ('teacher', 'teacher'), ('admin', 'admin'), ('undefined', 'undefined')]
+role_student = 'student'
+role_teacher = 'teacher'
+role_admin = 'admin'
+role_undefined = 'undefined'
+role_sub_student = "student_0"
+role_enum = [('student', 'student'),
+             ('teacher', 'teacher'),
+             ('admin', 'admin'),
+             ('undefined', 'undefined'),
+             (role_sub_student, role_sub_student)]
 
 
 class User(models.Model):
