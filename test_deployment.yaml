@@ -55,7 +55,7 @@ spec:
           mountPath: /nexus
       containers:
       - name: frext-testing-test
-        image: wxwd14388/frext-testing:v1.0.11
+        image: wxwd14388/frext-testing:v1.0.12
         volumeMounts:
         - name: frext-job
           mountPath: /tmp/FrexT

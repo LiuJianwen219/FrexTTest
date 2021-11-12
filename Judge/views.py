@@ -1,6 +1,7 @@
 import decimal
 from datetime import datetime
 
+from apscheduler.schedulers.background import BackgroundScheduler
 from django.shortcuts import render
 import os, json, time
 import subprocess, uuid
@@ -33,10 +34,6 @@ from Login.models import User
 
 logger = logging.getLogger(__name__)
 
-compileChecker = None
-threadIndex = 0
-threadList = {}
-
 judgeChecker = None
 judgeThreadIndex = 0
 judgeThreadList = {}
@@ -53,8 +50,11 @@ def start_judge(request):
 
     global judgeChecker
     if judgeChecker is None:
-        judgeChecker = 1
-        Timer(10, detectJudge).start()
+        judgeChecker = BackgroundScheduler()
+        judgeChecker.add_job(detectJudge, "interval", seconds=10)
+        judgeChecker.start()
+    judgeChecker.pause()
+
 
     values = {
         "userId": request.POST.get("userId", None),
@@ -90,6 +90,8 @@ def start_judge(request):
     submit.message += str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + " Start: test\n"
     submit.test_start_time = datetime.now()
     submit.save()
+
+    judgeChecker.resume()
 
     data = {"state": "OK", "testState": "准备测试", "info": "task submit"}
     return HttpResponse(json.dumps(data), content_type='application/json')
@@ -201,7 +203,6 @@ def detectJudge():
         print("judge delete: " + k)
         del judgeThreadList[k]
 
-    Timer(10, detectJudge).start()
 
 
 def judge_result(request):
