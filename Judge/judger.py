@@ -17,7 +17,9 @@ class JudgeThread(Thread):
         self.content = content
 
     def run(self):
+        print("judge running")
         self.result = self.func(self.content)
+        print("judge running over")
 
     def get_result(self):
         try:

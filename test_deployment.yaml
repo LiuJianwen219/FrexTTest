@@ -72,3 +72,12 @@ spec:
           hostPath:
             path: /root/FrexT_data/frext-file-system/log_testing
             type: Directory
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: frext/role
+                    operator: In
+                    values:
+                      - file-system

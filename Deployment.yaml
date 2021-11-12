@@ -18,6 +18,15 @@ spec:
       containers:
       - name: frext-compile-rabbit
         image: wxwd14388/frext-compile-rabbitmq:v0.1.1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: frext/role
+                    operator: In
+                    values:
+                      - file-system
 
 ---
 apiVersion: apps/v1
@@ -39,3 +48,12 @@ spec:
       containers:
       - name: frext-test-rabbit
         image: wxwd14388/frext-test-rabbitmq:v0.1.3
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: frext/role
+                    operator: In
+                    values:
+                      - file-system
