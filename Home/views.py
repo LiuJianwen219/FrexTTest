@@ -675,10 +675,9 @@ def ranking(request):
                              "allG": 0.00,
                              "allT": "~~"})
 
-    # print(rankings)
-
-    rankings.sort(key=lambda x: (-x["passN"], -x["passG"],
-                                 -x["allN"], -x["allG"], x["passT"], x["allT"]))
+    # rankings.sort(key=lambda x: (-x["passN"], -x["passG"],
+    #                              -x["allN"], -x["allG"], x["passT"], x["allT"]))
+    rankings.sort(key=lambda x: (x["user"]))
 
     content = {
         'rankings': rankings,
