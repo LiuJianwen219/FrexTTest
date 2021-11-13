@@ -113,7 +113,11 @@
                         </tbody>
                       </table>
                       <hr>
+                        {% if request.session.role != "student_0" %}
                       <table class="table">
+                          {% else %}
+                      <table class="table" style="display: none">
+                          {% endif %}
                         <thead class="thead-light">
                           <tr>
                             <th scope="col">测试点</th>

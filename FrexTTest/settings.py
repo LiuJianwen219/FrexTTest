@@ -167,7 +167,7 @@ Compile_Time_Unit = 5  # 秒
 Compile_MAX_Thread = 4  # 最多的编译线程，可调整
 Judge_MAX_Time = 1200  # 秒
 Judge_Time_Unit = 5  # 秒
-Judge_MAX_Thread = 4  # 最多的评测线程
+Judge_MAX_Thread = 1  # 最多的评测线程
 
 Compile_Server_Url = "http://frext-compile-svc:8012/"
 Compile_Server_Api = "compile/"
