@@ -17,7 +17,7 @@
         </div>
       </div>
     </div>
-
+{% csrf_token %}
     <div class="container">
       <div class="row">
         <div class="col-sm-2 col-md-2 col-lg-2">
@@ -44,14 +44,14 @@
           <table class="table" id="rank-table">
             <thead class="thead-light">
               <tr>
-                <th type="number"><button>序号</button></th>
-                <th type="string"><button>用户</button></th>
-                <th type="number"><button>通过题</button></th>
-                <th type="number"><button>通过分数</button></th>
-                <th type="string"><button>通过时间刷新</button></th>
-                <th type="number"><button>总做题</button></th>
-                <th type="number"><button>总分数</button></th>
-                <th type="string"><button>总时间刷新</button></th>
+                <th type="number" id="序号"><button>序号</button></th>
+                <th type="string" id="用户"><button>用户</button></th>
+                <th type="number" id="通过题"><button>通过题</button></th>
+                <th type="number" id="通过分数"><button>通过分数</button></th>
+                <th type="string" id="通过时间刷新"><button>通过时间刷新</button></th>
+                <th type="number" id="总做题"><button>总做题</button></th>
+                <th type="number" id="总分数"><button>总分数</button></th>
+                <th type="string" id="总时间刷新"><button>总时间刷新</button></th>
               </tr>
             </thead>
             <tbody>
@@ -99,9 +99,9 @@
                     $(tds[thisIndex]).removeClass("hover");
                 });
             });
-            console.log("asd")
             $(this).click(function() {  //鼠标点击事件
                 let dataType = $(this).attr("type"); //获取当前点击列的 type
+                report_ranking($(this).attr("id"))
                 checkColumnValue(thisIndex, dataType); //对当前点击的列进行排序 （当前索引，排序类型）
             });
         });
@@ -170,7 +170,26 @@
             sortIndex = index;
         }
   })
-  
+
+
+    function report_ranking(column){
+        let data = new FormData();
+        data.append("column", column);
+        data.append("csrfmiddlewaretoken", $('[name="csrfmiddlewaretoken"]').val());
+        $.ajax({
+            url: "/ranking_record/",
+            type: 'POST',
+            data: data,
+            timeout: 3600000,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function (req) {
+
+            }
+        })
+    }
+
   
   
     var testDatas = document.getElementsByClassName("testDatas");

@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'download/$', views.download),
 
     path('ranking/', views.ranking),
+    path('ranking_record/', views.ranking_record),
     path('enterExotic/', views.enter_exotic),
 
 ]

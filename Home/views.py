@@ -686,6 +686,15 @@ def ranking(request):
     return render(request, "TestHome/rankList.html", content)
 
 
+def ranking_record(request):
+    column = request.POST.get('column', "未知列")
+    if access_check_record(request, "rank", "对全站进行排名: "+column):
+        return redirect("/")
+    return HttpResponse(json.dumps(response_ok()),
+                        content_type="text/plain; charset=utf-8")
+
+
+
 def guide(request):
     file = open("static/testGuide.md", 'r', encoding='utf-8')
     guideFile = file.read()
