@@ -57,10 +57,10 @@
                 <th scope="col">时长</th>
                 <th scope="col">lut</th>
                 <th scope="col">ff</th>
+                  {% endif %}
                 <th scope="col">代码</th>
                 <th scope="col">测试</th>
                 <th scope="col">日志</th>
-                  {% endif %}
               </tr>
             </thead>
             <tbody>
@@ -81,6 +81,7 @@
                   <td>{{ T.cycle }}</td>
                   <td>{{ T.luts }}</td>
                   <td>{{ T.ffs }}</td>
+                    {% endif %}
                   {% if request.session.role == "admin" %}
                     <td><a href="/seeCode/{{ T.upId }}/">代码</a></td>
                     <td><a href="/seeInfo/{{ T.upId }}/">测试</a></td>
@@ -96,7 +97,6 @@
                       <td><a href="/seeLog/{{ T.upId }}/">编译</a></td>
                     {% endif %}
                   {% endif %}
-                    {% endif %}
                 </tr>
               {% endfor %}
             </tbody>
